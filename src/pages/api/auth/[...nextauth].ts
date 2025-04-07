@@ -61,9 +61,11 @@ export default NextAuth({
   ],
   session: {
     strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
     signIn: '/auth/signin',
+    error: '/auth/error',
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -79,4 +81,5 @@ export default NextAuth({
       return session;
     },
   },
+  debug: process.env.NODE_ENV === 'development',
 }); 
