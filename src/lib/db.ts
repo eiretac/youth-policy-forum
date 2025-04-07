@@ -6,6 +6,9 @@ if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
 }
 
+// Log the connection string (with sensitive info redacted)
+console.log('Attempting to connect to MongoDB with URI:', MONGODB_URI.replace(/\/\/[^@]+@/, '//***:***@'));
+
 interface GlobalWithMongoose extends Global {
   mongoose: {
     conn: typeof mongoose | null;
@@ -42,11 +45,16 @@ export async function dbConnect() {
       retryReads: true,
     };
 
-    console.log('Creating new database connection...');
-    cached.promise = mongoose.connect(MONGODB_URI as string, opts).then((mongoose) => {
-      console.log('Database connection established');
-      return mongoose;
-    });
+    console.log('Creating new database connection with options:', opts);
+    cached.promise = mongoose.connect(MONGODB_URI as string, opts)
+      .then((mongoose) => {
+        console.log('Database connection established successfully');
+        return mongoose;
+      })
+      .catch((error) => {
+        console.error('Database connection failed:', error);
+        throw error;
+      });
   }
 
   try {
