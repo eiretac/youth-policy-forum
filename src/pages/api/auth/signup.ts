@@ -20,11 +20,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     await dbConnect();
 
-    const { name, email, password } = req.body;
+    // Parse the request body
+    let body;
+    try {
+      body = JSON.parse(req.body);
+    } catch (e) {
+      return res.status(400).json({ message: 'Invalid request body' });
+    }
+
+    const { name, email, password } = body;
 
     // Validate input
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Please provide all required fields' });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Please provide a valid email address' });
+    }
+
+    // Validate password length
+    if (password.length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters long' });
     }
 
     // Check if user already exists

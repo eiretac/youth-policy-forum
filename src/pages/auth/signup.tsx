@@ -47,16 +47,16 @@ export default function SignUp() {
         }),
       });
 
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({ message: 'An error occurred' }));
-        throw new Error(errorData.message || 'Something went wrong');
-      }
-
       const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Something went wrong');
+      }
 
       // Redirect to sign in page on success
       router.push('/auth/signin');
     } catch (err: any) {
+      console.error('Signup error:', err);
       setError(err.message || 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
