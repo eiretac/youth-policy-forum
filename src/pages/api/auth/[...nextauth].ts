@@ -11,7 +11,8 @@ declare module "next-auth" {
   }
   interface Session {
     user: {
-      role?: string;
+      id: string;
+      role: string;
     } & DefaultSession["user"]
   }
 }
@@ -22,7 +23,7 @@ declare module "next-auth/jwt" {
   }
 }
 
-const handler = NextAuth({
+export default NextAuth({
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -32,7 +33,7 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Please provide both email and password');
+          throw new Error('Please enter your email and password');
         }
 
         try {
@@ -45,7 +46,7 @@ const handler = NextAuth({
             throw new Error('No user found with this email');
           }
 
-          const isValid = await user.comparePassword(credentials.password);
+          const isValid = await compare(credentials.password, user.password);
 
           if (!isValid) {
             throw new Error('Invalid password');
@@ -58,7 +59,7 @@ const handler = NextAuth({
             role: user.role,
           };
         } catch (error) {
-          console.error('Authorization error:', error);
+          console.error('Authentication error:', error);
           throw error;
         }
       },
@@ -75,19 +76,19 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.id = user.id;
         token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        (session.user as any).role = token.role;
+      if (token) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
       }
       return session;
     },
   },
   debug: process.env.NODE_ENV === 'development',
   secret: process.env.NEXTAUTH_SECRET,
-});
-
-export { handler as GET, handler as POST }; 
+}); 
