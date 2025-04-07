@@ -12,20 +12,30 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const lastFocusableElementRef = useRef<HTMLButtonElement>(null);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  // Memoize dropdown items to prevent unnecessary re-renders
+  // Update dropdown items with correct paths
   const dropdownItems = useMemo(() => ({
     'Policy Areas': [
-      { name: 'Education', href: '/policy-areas/education' },
-      { name: 'Environment', href: '/policy-areas/environment' },
-      { name: 'Health', href: '/policy-areas/health' },
-      { name: 'Technology', href: '/policy-areas/technology' },
+      { name: 'Education', href: '/policy-areas#education' },
+      { name: 'Environment', href: '/policy-areas#environment' },
+      { name: 'Health', href: '/policy-areas#health' },
+      { name: 'Technology', href: '/policy-areas#technology' },
     ],
     'Get Involved': [
-      { name: 'Join Us', href: '/get-involved/join' },
-      { name: 'Volunteer', href: '/get-involved/volunteer' },
-      { name: 'Partnerships', href: '/get-involved/partnerships' },
+      { name: 'Join Us', href: '/get-involved#join' },
+      { name: 'Volunteer', href: '/get-involved#volunteer' },
+      { name: 'Partnerships', href: '/get-involved#partnerships' },
     ],
   }), []);
+
+  // Add search functionality
+  const [searchQuery, setSearchQuery] = useState('');
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+    }
+  };
 
   // Memoize event handlers
   const handleClickOutside = useCallback((event: MouseEvent) => {
@@ -154,25 +164,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <button
                   onClick={() => toggleDropdown('Policy Areas')}
                   onKeyDown={(e) => handleDropdownKeyDown(e, 'Policy Areas')}
-                  className="nav-link"
+                  className="nav-link flex items-center"
                   aria-expanded={activeDropdown === 'Policy Areas'}
                   aria-haspopup="true"
                 >
                   Policy Areas
+                  <svg className={`ml-1 h-4 w-4 transform transition-transform ${activeDropdown === 'Policy Areas' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
                 </button>
                 {activeDropdown === 'Policy Areas' && (
-                  <div 
-                    className="absolute right-0 mt-2 w-48 py-2 bg-primary-800 rounded-lg shadow-xl"
-                    role="menu"
-                    aria-orientation="vertical"
-                  >
+                  <div className="dropdown-menu" role="menu" aria-orientation="vertical">
                     {dropdownItems['Policy Areas'].map((item) => (
                       <Link
                         key={item.name}
                         href={item.href}
-                        className="block px-4 py-2 text-white hover:bg-primary-700 transition-colors"
+                        className="dropdown-item"
                         role="menuitem"
-                        tabIndex={0}
+                        onClick={() => setActiveDropdown(null)}
                       >
                         {item.name}
                       </Link>
@@ -186,25 +195,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <button
                   onClick={() => toggleDropdown('Get Involved')}
                   onKeyDown={(e) => handleDropdownKeyDown(e, 'Get Involved')}
-                  className="nav-link"
+                  className="nav-link flex items-center"
                   aria-expanded={activeDropdown === 'Get Involved'}
                   aria-haspopup="true"
                 >
                   Get Involved
+                  <svg className={`ml-1 h-4 w-4 transform transition-transform ${activeDropdown === 'Get Involved' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
                 </button>
                 {activeDropdown === 'Get Involved' && (
-                  <div 
-                    className="absolute right-0 mt-2 w-48 py-2 bg-primary-800 rounded-lg shadow-xl"
-                    role="menu"
-                    aria-orientation="vertical"
-                  >
+                  <div className="dropdown-menu" role="menu" aria-orientation="vertical">
                     {dropdownItems['Get Involved'].map((item) => (
                       <Link
                         key={item.name}
                         href={item.href}
-                        className="block px-4 py-2 text-white hover:bg-primary-700 transition-colors"
+                        className="dropdown-item"
                         role="menuitem"
-                        tabIndex={0}
+                        onClick={() => setActiveDropdown(null)}
                       >
                         {item.name}
                       </Link>
@@ -228,15 +236,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 Contact
               </Link>
 
-              {/* Search Button */}
-              <button
-                className="p-2 rounded-lg bg-primary-800 text-white hover:bg-primary-700 transition-colors"
-                aria-label="Search"
-              >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
+              {/* Search Form */}
+              <form onSubmit={handleSearch} className="relative">
+                <input
+                  type="search"
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-40 px-4 py-2 rounded-lg bg-primary-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-secondary focus:w-60 transition-all"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                  aria-label="Search"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
+              </form>
             </div>
 
             {/* Mobile menu button */}
@@ -278,6 +296,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         >
           <div className="h-full overflow-y-auto">
             <div className="px-4 pt-5 pb-6 space-y-1">
+              {/* Mobile Search */}
+              <form onSubmit={handleSearch} className="mb-4">
+                <div className="relative">
+                  <input
+                    type="search"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg bg-primary-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-secondary"
+                  />
+                  <button
+                    type="submit"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                    aria-label="Search"
+                  >
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </button>
+                </div>
+              </form>
+
               <Link
                 href="/about"
                 className="block px-3 py-2 text-white hover:bg-primary-800 transition-colors"
@@ -379,26 +419,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               >
                 Contact
               </Link>
-
-              {/* Search in Mobile Menu */}
-              <div className="px-3 py-2">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="w-full px-4 py-2 rounded-lg bg-primary-800 text-white focus:outline-none focus:ring-2 focus:ring-secondary"
-                    aria-label="Search"
-                  />
-                  <button 
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-300"
-                    aria-label="Submit search"
-                  >
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -407,7 +427,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Main Content */}
       <main 
         id="main-content" 
-        className="pt-16"
+        className="min-h-screen pt-16"
         role="main"
         aria-label="Main content"
       >
