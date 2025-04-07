@@ -196,87 +196,146 @@ export default function PolicyDebate() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-center mb-8 text-primary">Policy Debate Challenge</h1>
-          
-          <div className="bg-white rounded-lg shadow-xl p-6 mb-8">
-            {currentTopic && (
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-2">{currentTopic.title}</h2>
-                <p className="text-gray-600 mb-4">{currentTopic.description}</p>
+          <motion.h1
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl font-bold text-center mb-8 text-primary"
+          >
+            Policy Debate Challenge
+          </motion.h1>
+
+          {currentTopic && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-xl shadow-lg p-6 mb-8"
+            >
+              <h2 className="text-2xl font-bold mb-4 text-primary">{currentTopic.title}</h2>
+              <p className="text-lg text-gray-700 mb-6">{currentTopic.description}</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-3 text-green-700">Supporting Arguments</h3>
+                  <ul className="space-y-2">
+                    {currentTopic.proArguments.map((arg, index) => (
+                      <motion.li
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="text-green-600"
+                      >
+                        • {arg}
+                      </motion.li>
+                    ))}
+                  </ul>
+                </div>
                 
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div>
-                    <h3 className="font-semibold mb-2">Pro Arguments</h3>
-                    <ul className="list-disc pl-5">
-                      {currentTopic.proArguments.map((arg, index) => (
-                        <li key={index} className="text-sm text-gray-600">{arg}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Con Arguments</h3>
-                    <ul className="list-disc pl-5">
-                      {currentTopic.conArguments.map((arg, index) => (
-                        <li key={index} className="text-sm text-gray-600">{arg}</li>
-                      ))}
-                    </ul>
-                  </div>
+                <div className="bg-red-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-3 text-red-700">Counter Arguments</h3>
+                  <ul className="space-y-2">
+                    {currentTopic.conArguments.map((arg, index) => (
+                      <motion.li
+                        key={index}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="text-red-600"
+                      >
+                        • {arg}
+                      </motion.li>
+                    ))}
+                  </ul>
                 </div>
               </div>
-            )}
-            
-            {message && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 bg-gray-100 rounded-lg text-center"
-              >
-                {message}
-              </motion.div>
-            )}
-            
-            <div className="mb-8">
-              <h3 className="font-semibold mb-4">Played Cards</h3>
-              <div className="grid grid-cols-3 gap-4">
-                {playedCards.map((card) => (
-                  <div
-                    key={card.id}
-                    className="p-4 border rounded-lg bg-gray-50"
-                  >
-                    <p className="text-sm font-semibold text-gray-600 mb-2">
+            </motion.div>
+          )}
+
+          {/* Game Status */}
+          <div className="flex justify-between items-center mb-8">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="bg-white rounded-lg shadow-md p-4"
+            >
+              <p className="text-lg font-semibold text-primary">Round {round} of 3</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="bg-white rounded-lg shadow-md p-4"
+            >
+              <p className="text-lg font-semibold text-secondary">Score: {score}</p>
+            </motion.div>
+          </div>
+
+          {/* Player's Hand */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold text-primary mb-4">Your Evidence Cards</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {playerHand.map((card, index) => (
+                <motion.button
+                  key={card.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => playCard(card)}
+                  className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition-all text-left border-2 border-secondary"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="text-lg font-semibold text-secondary capitalize">
                       {card.type.replace('_', ' ')}
-                    </p>
-                    <p className="text-sm">{card.content}</p>
+                    </h4>
+                    <span className="bg-secondary text-white px-2 py-1 rounded-full text-sm">
+                      Strength: {card.strength}
+                    </span>
                   </div>
-                ))}
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4">Your Hand</h3>
-              <div className="grid grid-cols-2 gap-4">
-                {playerHand.map((card) => (
-                  <button
-                    key={card.id}
-                    onClick={() => playCard(card)}
-                    className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-left"
-                  >
-                    <p className="text-sm font-semibold text-gray-600 mb-2">
-                      {card.type.replace('_', ' ')}
-                    </p>
-                    <p className="text-sm">{card.content}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-            
-            <div className="mt-6 flex justify-between items-center">
-              <p className="text-gray-600">Round {round} of 3</p>
-              <p className="text-xl font-bold">Score: {score}</p>
+                  <p className="text-gray-700">{card.content}</p>
+                </motion.button>
+              ))}
             </div>
           </div>
+
+          {/* Played Cards */}
+          {playedCards.length > 0 && (
+            <div className="mt-8">
+              <h3 className="text-xl font-semibold text-primary mb-4">Played Cards</h3>
+              <div className="space-y-4">
+                {playedCards.map((card, index) => (
+                  <motion.div
+                    key={card.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-gray-50 p-4 rounded-lg border border-gray-200"
+                  >
+                    <div className="flex justify-between items-start">
+                      <h4 className="text-lg font-semibold text-gray-700 capitalize">
+                        {card.type.replace('_', ' ')}
+                      </h4>
+                      <span className="text-gray-500">Impact: {calculateCardImpact(card)}</span>
+                    </div>
+                    <p className="text-gray-600 mt-2">{card.content}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Game Message */}
+          {message && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-8 p-4 bg-accent bg-opacity-10 rounded-lg text-center"
+            >
+              <p className="text-accent font-semibold">{message}</p>
+            </motion.div>
+          )}
         </div>
       </div>
     </Layout>
