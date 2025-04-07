@@ -18,13 +18,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    console.log('Connecting to database...');
     await dbConnect();
+    console.log('Database connected successfully');
 
     // Parse the request body
     let body;
     try {
       body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      console.log('Request body:', { ...body, password: '[REDACTED]' });
     } catch (e) {
+      console.error('Failed to parse request body:', e);
       return res.status(400).json({ message: 'Invalid request body' });
     }
 
@@ -32,32 +36,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Validate input
     if (!name || !email || !password) {
+      console.error('Missing required fields:', { name, email, password: password ? '[REDACTED]' : undefined });
       return res.status(400).json({ message: 'Please provide all required fields' });
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
+      console.error('Invalid email format:', email);
       return res.status(400).json({ message: 'Please provide a valid email address' });
     }
 
     // Validate password length
     if (password.length < 8) {
+      console.error('Password too short');
       return res.status(400).json({ message: 'Password must be at least 8 characters long' });
     }
 
     // Check if user already exists
+    console.log('Checking for existing user...');
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+      console.error('User already exists:', email);
       return res.status(400).json({ message: 'User with this email already exists' });
     }
 
     // Create new user
+    console.log('Creating new user...');
     const user = await User.create({
       name,
       email,
       password, // Password will be hashed by the model's pre-save hook
     });
+    console.log('User created successfully');
 
     // Remove password from response
     const userResponse = {
@@ -70,6 +81,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(201).json(userResponse);
   } catch (error: any) {
     console.error('Signup error:', error);
+    // Log the full error object in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Full error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+      });
+    }
     return res.status(500).json({ 
       message: error.message || 'Error creating user',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
