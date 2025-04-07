@@ -3,9 +3,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
+import { useSession, signOut } from 'next-auth/react';
 
 const Navbar = () => {
   const router = useRouter();
+  const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -181,6 +183,30 @@ const Navbar = () => {
           >
             Contact
           </Link>
+
+          {session ? (
+            <div className="flex items-center space-x-4">
+              <Link
+                href="/member-area"
+                className="nav-link text-gray-700 hover:text-secondary"
+              >
+                Member Area
+              </Link>
+              <button
+                onClick={() => signOut()}
+                className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-600 transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/auth/signin"
+              className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-600 transition-colors"
+            >
+              Sign In
+            </Link>
+          )}
 
           {/* Search Form */}
           <form onSubmit={handleSearch} className="relative">
@@ -394,6 +420,35 @@ const Navbar = () => {
                 >
                   Contact
                 </Link>
+
+                {session ? (
+                  <>
+                    <Link
+                      href="/member-area"
+                      className="block px-3 py-2 text-gray-700 hover:text-secondary transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Member Area
+                    </Link>
+                    <button
+                      onClick={() => {
+                        signOut();
+                        setIsMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-3 py-2 text-gray-700 hover:text-secondary transition-colors"
+                    >
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/auth/signin"
+                    className="block px-3 py-2 text-gray-700 hover:text-secondary transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                )}
               </div>
             </div>
           </motion.div>
