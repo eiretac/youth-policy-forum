@@ -26,6 +26,7 @@ interface GameState {
   society: number;
   turn: number;
   history: string[];
+  score: number;
 }
 
 const initialState: GameState = {
@@ -34,6 +35,7 @@ const initialState: GameState = {
   society: 50,
   turn: 1,
   history: [],
+  score: 0,
 };
 
 const events: Event[] = [
@@ -159,9 +161,9 @@ export default function PolicySimulator() {
   };
 
   const getScoreColor = (value: number) => {
-    if (value >= 75) return 'text-green-500';
-    if (value >= 50) return 'text-yellow-500';
-    return 'text-red-500';
+    if (value >= 75) return 'text-green-600 font-bold';
+    if (value >= 50) return 'text-yellow-600 font-bold';
+    return 'text-red-600 font-bold';
   };
 
   return (
@@ -172,21 +174,21 @@ export default function PolicySimulator() {
           
           <div className="bg-white rounded-lg shadow-xl p-6 mb-8">
             <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="text-center">
-                <h3 className="text-lg font-semibold">Environment</h3>
-                <p className={`text-2xl font-bold ${getScoreColor(gameState.environment)}`}>
+              <div className="text-center p-4 border rounded-lg bg-gray-50">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Environment</h3>
+                <p className={`text-3xl ${getScoreColor(gameState.environment)}`}>
                   {gameState.environment}%
                 </p>
               </div>
-              <div className="text-center">
-                <h3 className="text-lg font-semibold">Economy</h3>
-                <p className={`text-2xl font-bold ${getScoreColor(gameState.economy)}`}>
+              <div className="text-center p-4 border rounded-lg bg-gray-50">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Economy</h3>
+                <p className={`text-3xl ${getScoreColor(gameState.economy)}`}>
                   {gameState.economy}%
                 </p>
               </div>
-              <div className="text-center">
-                <h3 className="text-lg font-semibold">Society</h3>
-                <p className={`text-2xl font-bold ${getScoreColor(gameState.society)}`}>
+              <div className="text-center p-4 border rounded-lg bg-gray-50">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Society</h3>
+                <p className={`text-3xl ${getScoreColor(gameState.society)}`}>
                   {gameState.society}%
                 </p>
               </div>
@@ -196,7 +198,7 @@ export default function PolicySimulator() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 bg-gray-100 rounded-lg text-center"
+                className="mb-6 p-4 bg-gray-50 border rounded-lg text-center text-gray-800"
               >
                 {feedback}
               </motion.div>
@@ -222,17 +224,29 @@ export default function PolicySimulator() {
                 </button>
               </div>
             ) : currentEvent ? (
-              <div>
-                <h2 className="text-2xl font-bold mb-4">{currentEvent.title}</h2>
-                <p className="mb-6">{currentEvent.description}</p>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4 text-gray-800">{currentEvent.title}</h2>
+                <p className="text-gray-600 mb-6">{currentEvent.description}</p>
                 <div className="space-y-4">
                   {currentEvent.choices.map((choice) => (
                     <button
                       key={choice.id}
                       onClick={() => handleChoice(choice)}
-                      className="w-full text-left p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                      className="w-full text-left p-4 border rounded-lg hover:bg-gray-50 transition-colors bg-white"
                     >
-                      {choice.text}
+                      <p className="text-gray-800 font-medium mb-2">{choice.text}</p>
+                      <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                        <div>
+                          <p className="font-semibold">Impact:</p>
+                          <ul className="list-disc list-inside">
+                            {Object.entries(choice.consequences).map(([key, value]) => (
+                              <li key={key} className={typeof value === 'number' && value > 0 ? 'text-green-600' : 'text-red-600'}>
+                                {key.charAt(0).toUpperCase() + key.slice(1)}: {typeof value === 'number' && value > 0 ? '+' : ''}{value}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -241,8 +255,9 @@ export default function PolicySimulator() {
               <p>Loading...</p>
             )}
 
-            <div className="mt-6 text-center">
+            <div className="mt-6 flex justify-between items-center border-t pt-4">
               <p className="text-gray-600">Turn {gameState.turn} of 10</p>
+              <p className="text-xl font-bold text-gray-800">Total Impact: {gameState.score}</p>
             </div>
           </div>
         </div>
