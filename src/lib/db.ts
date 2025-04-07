@@ -53,7 +53,8 @@ async function dbConnect() {
   } catch (e) {
     console.error('Failed to establish database connection:', e);
     cached.promise = null;
-    throw new Error(`Failed to connect to database: ${e.message}`);
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error occurred';
+    throw new Error(`Failed to connect to database: ${errorMessage}`);
   }
 
   return cached.conn;
