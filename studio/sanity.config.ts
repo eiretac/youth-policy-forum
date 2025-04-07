@@ -3,6 +3,13 @@ import { deskTool } from 'sanity/desk';
 import { visionTool } from '@sanity/vision';
 import { schemaTypes } from './schemas';
 
+// Debug environment variables
+console.log('Environment Variables Debug:');
+console.log('SANITY_PROJECT_ID:', process.env.SANITY_PROJECT_ID);
+console.log('NEXT_PUBLIC_SANITY_PROJECT_ID:', process.env.NEXT_PUBLIC_SANITY_PROJECT_ID);
+console.log('SANITY_DATASET:', process.env.SANITY_DATASET);
+console.log('NEXT_PUBLIC_SANITY_DATASET:', process.env.NEXT_PUBLIC_SANITY_DATASET);
+
 // Get environment variables with fallbacks
 const projectId = process.env.SANITY_PROJECT_ID || process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.SANITY_DATASET || process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
