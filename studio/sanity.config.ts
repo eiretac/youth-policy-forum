@@ -6,6 +6,7 @@ import { schemaTypes } from './schemas';
 // Get environment variables with fallbacks
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || process.env.SANITY_PROJECT_ID || 'btt6o49p';
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || process.env.SANITY_DATASET || 'production';
+const apiToken = process.env.SANITY_API_TOKEN;
 
 // Debug environment variables
 console.log('Environment Variables Debug:');
@@ -13,6 +14,7 @@ console.log('NEXT_PUBLIC_SANITY_PROJECT_ID:', process.env.NEXT_PUBLIC_SANITY_PRO
 console.log('SANITY_PROJECT_ID:', process.env.SANITY_PROJECT_ID);
 console.log('Using projectId:', projectId);
 console.log('Using dataset:', dataset);
+console.log('API Token present:', !!apiToken);
 
 // Validate required environment variables
 if (!projectId) {
@@ -30,6 +32,8 @@ const config = defineConfig({
   schema: {
     types: schemaTypes,
   },
+  // Add token for authenticated requests
+  token: apiToken,
 });
 
 export default config; 
