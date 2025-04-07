@@ -167,6 +167,14 @@ const Navbar = () => {
           </Link>
 
           <Link 
+            href="/resources" 
+            className={`nav-link ${router.pathname === '/resources' ? 'text-secondary' : 'text-gray-700 hover:text-secondary'}`}
+            aria-current={router.pathname === '/resources' ? 'page' : undefined}
+          >
+            Resources
+          </Link>
+
+          <Link 
             href="/contact" 
             className={`nav-link ${router.pathname === '/contact' ? 'text-secondary' : 'text-gray-700 hover:text-secondary'}`}
             aria-current={router.pathname === '/contact' ? 'page' : undefined}
@@ -367,6 +375,15 @@ const Navbar = () => {
                   aria-current={router.pathname === '/arcade' ? 'page' : undefined}
                 >
                   Arcade
+                </Link>
+
+                <Link
+                  href="/resources"
+                  className="block px-3 py-2 text-gray-700 hover:text-secondary transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                  aria-current={router.pathname === '/resources' ? 'page' : undefined}
+                >
+                  Resources
                 </Link>
 
                 <Link
