@@ -38,9 +38,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       role: user.role,
     };
 
-    res.status(201).json(userResponse);
+    return res.status(201).json(userResponse);
   } catch (error: any) {
     console.error('Signup error:', error);
-    res.status(500).json({ message: 'Error creating user' });
+    return res.status(500).json({ 
+      message: error.message || 'Error creating user',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 } 

@@ -47,11 +47,12 @@ export default function SignUp() {
         }),
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
-        throw new Error(data.message || 'Something went wrong');
+        const errorData = await res.json().catch(() => ({ message: 'An error occurred' }));
+        throw new Error(errorData.message || 'Something went wrong');
       }
+
+      const data = await res.json();
 
       // Redirect to sign in page on success
       router.push('/auth/signin');

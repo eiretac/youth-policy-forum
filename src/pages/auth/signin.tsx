@@ -3,6 +3,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 export default function SignIn() {
   const router = useRouter();
@@ -152,6 +153,12 @@ export default function SignIn() {
                   )}
                 </button>
               </div>
+              <p className="text-center text-gray-600 mt-4">
+                No account?{' '}
+                <Link href="/auth/signup" className="text-primary hover:underline">
+                  Register here
+                </Link>
+              </p>
             </form>
           </motion.div>
         </div>
