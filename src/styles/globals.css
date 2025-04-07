@@ -14,67 +14,12 @@
 }
 
 @layer components {
-  .hero-section {
-    @apply relative bg-primary text-white py-20 px-4 sm:px-6 lg:px-8;
-  }
-
-  .hero-content {
-    @apply max-w-7xl mx-auto text-center;
-  }
-
-  .hero-title {
-    @apply text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4;
-    background: linear-gradient(45deg, #36a6ca, #29b5a4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .hero-subtitle {
-    @apply text-lg sm:text-xl md:text-2xl text-gray-300 mb-8;
-  }
-
-  .btn-primary {
-    @apply inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md
-           text-white bg-secondary hover:bg-secondary-dark transition-colors duration-200
-           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary;
-  }
-  
-  .btn-outline {
-    @apply border-2 border-white text-white px-8 py-3 rounded-md font-semibold hover:bg-white/10 transition-colors;
-  }
-
-  .btn-secondary {
-    @apply inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md
-           text-primary bg-white hover:bg-gray-100 transition-colors duration-200
-           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white;
-  }
-
-  .btn-accent {
-    @apply bg-accent text-white px-4 py-2 rounded-md hover:bg-accent-600 transition-colors;
-  }
-
-  .gradient-text {
-    @apply bg-gradient-primary bg-clip-text text-transparent;
-  }
-
   .nav-link {
     @apply text-white hover:text-secondary transition-colors duration-200 relative;
   }
 
   .nav-link[aria-current='page'] {
     @apply text-secondary;
-  }
-
-  .footer-link {
-    @apply text-gray-300 hover:text-secondary transition-colors;
-  }
-
-  .section-title {
-    @apply text-3xl sm:text-4xl font-bold text-center mb-8 text-primary;
-  }
-
-  .section-subtitle {
-    @apply text-xl text-gray-600 text-center mb-12;
   }
 
   .dropdown-menu {
@@ -88,8 +33,40 @@
            transition-colors duration-200 cursor-pointer;
   }
 
+  /* Hero section styles */
+  .hero-section {
+    @apply relative bg-primary text-white py-20 px-4 sm:px-6 lg:px-8;
+    background: linear-gradient(135deg, #04192c 0%, #36a6ca 100%);
+  }
+
+  .hero-content {
+    @apply max-w-7xl mx-auto text-center;
+  }
+
+  .hero-title {
+    @apply text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4 text-white;
+  }
+
+  .hero-subtitle {
+    @apply text-lg sm:text-xl md:text-2xl text-gray-100 mb-8;
+  }
+
+  /* Button styles */
+  .btn-primary {
+    @apply inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md
+           text-white bg-secondary hover:bg-secondary-dark transition-colors duration-200
+           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center px-6 py-3 border-2 border-white text-base font-medium rounded-md
+           text-white hover:bg-white hover:text-primary transition-colors duration-200
+           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white;
+  }
+
+  /* Card styles */
   .card {
-    @apply bg-white rounded-lg shadow-md overflow-hidden;
+    @apply bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-200 hover:shadow-xl;
   }
 
   .card-header {
@@ -97,13 +74,14 @@
   }
 
   .card-body {
-    @apply px-6 py-4;
+    @apply px-6 py-4 text-gray-700;
   }
 
   .card-footer {
     @apply px-6 py-4 bg-gray-50 border-t border-gray-200;
   }
 
+  /* Form styles */
   .form-input {
     @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm
            focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50;
@@ -117,8 +95,30 @@
     @apply mt-2 text-sm text-red-600;
   }
 
+  /* Section styles */
   .section {
     @apply py-12 sm:py-16 lg:py-20;
+  }
+
+  .section-title {
+    @apply text-3xl sm:text-4xl font-bold text-center mb-8 text-primary;
+  }
+
+  .section-subtitle {
+    @apply text-xl text-gray-600 text-center mb-12;
+  }
+
+  /* Feature box styles */
+  .feature-box {
+    @apply bg-white rounded-lg shadow-lg p-6 transform transition-transform hover:scale-105;
+  }
+
+  .feature-title {
+    @apply text-xl font-bold mb-4 text-primary;
+  }
+
+  .feature-text {
+    @apply text-gray-700;
   }
 }
 
@@ -128,7 +128,7 @@
 }
 
 .text-on-light {
-  @apply text-primary;
+  @apply text-gray-700;
 }
 
 /* Animation for dropdown menus */
@@ -145,4 +145,9 @@
 
 .dropdown-menu {
   animation: dropdownEnter 0.2s ease-out;
+}
+
+/* Smooth transitions */
+* {
+  @apply transition-colors duration-200;
 } 
