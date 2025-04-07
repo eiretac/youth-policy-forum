@@ -1,155 +1,139 @@
-import { NextPage } from 'next';
-import Layout from '../components/Layout';
+import React from 'react';
+import Layout from '@/components/Layout';
 import Link from 'next/link';
-import { useState } from 'react';
+import { motion } from 'framer-motion';
 
-interface Game {
-  id: string;
+interface GameCard {
   title: string;
   description: string;
   image: string;
-  category: string;
+  href: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
-  path: string;
+  duration: string;
+  skills: string[];
 }
 
-const games: Game[] = [
+const games: GameCard[] = [
   {
-    id: 'policy-puzzle',
-    title: 'Policy Puzzle',
-    description: 'Piece together effective policies by connecting different elements and understanding their impacts.',
-    image: '/images/games/puzzle.svg',
-    category: 'Education',
-    difficulty: 'Easy',
-    path: '/arcade/policy-puzzle'
+    title: 'Policy Impact Simulator',
+    description: 'Make critical policy decisions and see their cascading effects on society, economy, and environment. Can you maintain the delicate balance?',
+    image: '/images/policy-simulator.svg',
+    href: '/arcade/policy-simulator',
+    difficulty: 'Medium',
+    duration: '10-15 mins',
+    skills: ['Decision Making', 'Resource Management', 'Impact Analysis']
   },
   {
-    id: 'budget-hero',
-    title: 'Budget Hero',
-    description: 'Balance the budget while maintaining social services and managing resources effectively.',
-    image: '/images/games/budget.svg',
-    category: 'Economics',
-    difficulty: 'Medium',
-    path: '/arcade/budget-hero'
+    title: 'Policy Debate Challenge',
+    description: 'Build compelling arguments using evidence cards. Combine statistics, research, and expert opinions to win policy debates!',
+    image: '/images/policy-debate.svg',
+    href: '/arcade/policy-debate',
+    difficulty: 'Hard',
+    duration: '15-20 mins',
+    skills: ['Critical Thinking', 'Argumentation', 'Evidence Analysis']
   },
   {
-    id: 'climate-quest',
-    title: 'Climate Quest',
-    description: 'Navigate environmental challenges and create sustainable solutions for a better future.',
-    image: '/images/games/climate.svg',
-    category: 'Environment',
+    title: 'Priority Puzzle',
+    description: 'Balance limited resources while implementing crucial policies. Master the art of prioritization and strategic planning!',
+    image: '/images/priority-puzzle.svg',
+    href: '/arcade/priority-puzzle',
     difficulty: 'Medium',
-    path: '/arcade/climate-quest'
+    duration: '10-15 mins',
+    skills: ['Resource Management', 'Strategic Planning', 'Time Management']
   }
 ];
 
-const ArcadePage: NextPage = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
+const getDifficultyColor = (difficulty: string) => {
+  switch (difficulty) {
+    case 'Easy':
+      return 'bg-green-100 text-green-800';
+    case 'Medium':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'Hard':
+      return 'bg-red-100 text-red-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+};
 
-  const filteredGames = games.filter(game => {
-    const categoryMatch = selectedCategory === 'all' || game.category.toLowerCase() === selectedCategory;
-    const difficultyMatch = selectedDifficulty === 'all' || game.difficulty.toLowerCase() === selectedDifficulty;
-    return categoryMatch && difficultyMatch;
-  });
-
-  const categories = ['all', ...Array.from(new Set(games.map(game => game.category.toLowerCase())))];
-  const difficulties = ['all', 'easy', 'medium', 'hard'];
-
+export default function Arcade() {
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-b from-primary to-primary-dark">
-        {/* Hero Section */}
-        <section className="pt-16 pb-12 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-            Policy Arcade
-          </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto px-4">
-            Learn about policy-making through interactive games and challenges.
-            Have fun while understanding how policies shape our world!
-          </p>
-        </section>
-
-        {/* Filters */}
-        <section className="pb-8">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-wrap gap-4 justify-center">
-              <div className="space-y-2">
-                <label className="text-white text-sm font-medium">Category:</label>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="ml-2 bg-primary-800 text-white rounded-md px-3 py-1 border border-primary-600 focus:outline-none focus:ring-2 focus:ring-secondary"
-                >
-                  {categories.map(category => (
-                    <option key={category} value={category}>
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-white text-sm font-medium">Difficulty:</label>
-                <select
-                  value={selectedDifficulty}
-                  onChange={(e) => setSelectedDifficulty(e.target.value)}
-                  className="ml-2 bg-primary-800 text-white rounded-md px-3 py-1 border border-primary-600 focus:outline-none focus:ring-2 focus:ring-secondary"
-                >
-                  {difficulties.map(difficulty => (
-                    <option key={difficulty} value={difficulty}>
-                      {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+      <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <motion.h1 
+              className="text-4xl font-bold text-primary mb-4"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              Policy Arcade
+            </motion.h1>
+            <motion.p 
+              className="text-xl text-gray-600"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              Learn about policy-making through interactive games and challenges
+            </motion.p>
           </div>
-        </section>
 
-        {/* Games Grid */}
-        <section className="pb-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredGames.map((game) => (
-                <Link
-                  key={game.id}
-                  href={game.path}
-                  className="bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
-                >
-                  <div className="aspect-w-16 aspect-h-9 bg-gray-100">
-                    <div className="p-4 flex items-center justify-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {games.map((game, index) => (
+              <motion.div
+                key={game.title}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <Link href={game.href} className="block">
+                  <div className="bg-white rounded-lg shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
+                    <div className="h-48 bg-gray-200 flex items-center justify-center">
                       {/* Placeholder for game image */}
-                      <div className="w-full h-48 bg-primary-800 rounded-lg flex items-center justify-center">
-                        <span className="text-white text-lg">Game Preview</span>
+                      <span className="text-4xl text-gray-400">🎮</span>
+                    </div>
+                    <div className="p-6">
+                      <h2 className="text-2xl font-bold mb-2 text-primary">{game.title}</h2>
+                      <p className="text-gray-600 mb-4">{game.description}</p>
+                      
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(game.difficulty)}`}>
+                          {game.difficulty}
+                        </span>
+                        <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                          {game.duration}
+                        </span>
+                      </div>
+
+                      <div className="space-y-2">
+                        <h3 className="text-sm font-semibold text-gray-500">Skills</h3>
+                        <div className="flex flex-wrap gap-2">
+                          {game.skills.map(skill => (
+                            <span 
+                              key={skill}
+                              className="px-2 py-1 bg-primary/10 text-primary text-sm rounded"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-xl font-bold text-primary">{game.title}</h3>
-                      <span className={`px-2 py-1 rounded text-sm font-medium ${
-                        game.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
-                        game.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {game.difficulty}
-                      </span>
-                    </div>
-                    <p className="text-gray-600 mb-4">{game.description}</p>
-                    <div className="flex items-center">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary">
-                        {game.category}
-                      </span>
-                    </div>
-                  </div>
                 </Link>
-              ))}
-            </div>
+              </motion.div>
+            ))}
           </div>
-        </section>
+
+          <div className="mt-12 text-center">
+            <p className="text-gray-600">
+              More games coming soon! Check back regularly for new challenges.
+            </p>
+          </div>
+        </div>
       </div>
     </Layout>
   );
-};
-
-export default ArcadePage; 
+} 
