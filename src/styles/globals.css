@@ -15,7 +15,7 @@
 
 @layer components {
   .nav-link {
-    @apply text-white hover:text-secondary transition-colors duration-200 relative;
+    @apply text-white hover:text-secondary transition-colors;
   }
 
   .nav-link[aria-current='page'] {
@@ -23,14 +23,11 @@
   }
 
   .dropdown-menu {
-    @apply absolute right-0 mt-2 w-48 py-2 bg-primary-800 rounded-lg shadow-xl z-50
-           transform opacity-100 scale-100 transition-all duration-200 ease-out
-           origin-top-right;
+    @apply absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 z-50;
   }
 
   .dropdown-item {
-    @apply block px-4 py-2 text-white hover:bg-primary-700 hover:text-secondary
-           transition-colors duration-200 cursor-pointer;
+    @apply block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left;
   }
 
   /* Hero section styles */
@@ -119,6 +116,11 @@
 
   .feature-text {
     @apply text-gray-700;
+  }
+
+  /* Footer Styles */
+  .footer-link {
+    @apply text-gray-300 hover:text-secondary transition-colors;
   }
 }
 

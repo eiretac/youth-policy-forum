@@ -21,8 +21,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       { name: 'Technology', href: '/policy/technology' },
     ],
     'Get Involved': [
-      { name: 'Join Us', href: '/join' },
-      { name: 'Volunteer', href: '/volunteer' },
+      { name: 'Join Us', href: '/get-involved' },
+      { name: 'Volunteer', href: '/get-involved#volunteer' },
       { name: 'Partnerships', href: '/partnerships' },
       { name: 'Arcade', href: '/arcade' },
     ],
@@ -521,4 +521,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
     </div>
   );
+}
+
+.nav-link {
+  @apply text-white hover:text-secondary transition-colors;
+}
+
+.dropdown-menu {
+  @apply absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 z-50;
+}
+
+.dropdown-item {
+  @apply block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left;
+}
+
+.footer-link {
+  @apply text-gray-300 hover:text-secondary transition-colors;
 } 
