@@ -15,15 +15,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   // Update dropdown items with correct paths
   const dropdownItems = useMemo(() => ({
     'Policy Areas': [
-      { name: 'Education', href: '/policy-areas#education' },
-      { name: 'Environment', href: '/policy-areas#environment' },
-      { name: 'Health', href: '/policy-areas#health' },
-      { name: 'Technology', href: '/policy-areas#technology' },
+      { name: 'Education', href: '/policy/education' },
+      { name: 'Environment', href: '/policy/environment' },
+      { name: 'Health', href: '/policy/health' },
+      { name: 'Technology', href: '/policy/technology' },
     ],
     'Get Involved': [
-      { name: 'Join Us', href: '/get-involved#join' },
-      { name: 'Volunteer', href: '/get-involved#volunteer' },
-      { name: 'Partnerships', href: '/get-involved#partnerships' },
+      { name: 'Join Us', href: '/join' },
+      { name: 'Volunteer', href: '/volunteer' },
+      { name: 'Partnerships', href: '/partnerships' },
+      { name: 'Arcade', href: '/arcade' },
     ],
   }), []);
 
