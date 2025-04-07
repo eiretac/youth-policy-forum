@@ -22,7 +22,7 @@ declare module "next-auth/jwt" {
   }
 }
 
-export default NextAuth({
+const handler = NextAuth({
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -35,27 +35,32 @@ export default NextAuth({
           throw new Error('Please provide both email and password');
         }
 
-        await dbConnect();
+        try {
+          await dbConnect();
 
-        // Find user and explicitly select password
-        const user = await User.findOne({ email: credentials.email }).select('+password');
+          // Find user and explicitly select password
+          const user = await User.findOne({ email: credentials.email }).select('+password');
 
-        if (!user) {
-          throw new Error('No user found with this email');
+          if (!user) {
+            throw new Error('No user found with this email');
+          }
+
+          const isValid = await user.comparePassword(credentials.password);
+
+          if (!isValid) {
+            throw new Error('Invalid password');
+          }
+
+          return {
+            id: user._id.toString(),
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error('Authorization error:', error);
+          throw error;
         }
-
-        const isValid = await user.comparePassword(credentials.password);
-
-        if (!isValid) {
-          throw new Error('Invalid password');
-        }
-
-        return {
-          id: user._id.toString(),
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
       },
     }),
   ],
@@ -82,4 +87,7 @@ export default NextAuth({
     },
   },
   debug: process.env.NODE_ENV === 'development',
-}); 
+  secret: process.env.NEXTAUTH_SECRET,
+});
+
+export { handler as GET, handler as POST }; 
