@@ -1,11 +1,8 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@sanity/vercel-deploy-script"
-    }
-  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "other",
   "env": {
     "SANITY_PROJECT_ID": "SANITY_PROJECT_ID",
     "SANITY_DATASET": "SANITY_DATASET",
