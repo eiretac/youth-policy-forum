@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const { isDarkMode, toggleDarkMode } = useTheme();
@@ -146,7 +148,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link 
                 href="/about" 
                 className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                aria-current={window.location.pathname === '/about' ? 'page' : undefined}
+                aria-current={router.pathname === '/about' ? 'page' : undefined}
               >
                 About
               </Link>
@@ -228,14 +230,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link 
                 href="/events" 
                 className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                aria-current={window.location.pathname === '/events' ? 'page' : undefined}
+                aria-current={router.pathname === '/events' ? 'page' : undefined}
               >
                 Events
               </Link>
               <Link 
                 href="/contact" 
                 className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                aria-current={window.location.pathname === '/contact' ? 'page' : undefined}
+                aria-current={router.pathname === '/contact' ? 'page' : undefined}
               >
                 Contact
               </Link>
@@ -311,7 +313,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 href="/about"
                 className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
-                aria-current={window.location.pathname === '/about' ? 'page' : undefined}
+                aria-current={router.pathname === '/about' ? 'page' : undefined}
               >
                 About
               </Link>
@@ -396,7 +398,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 href="/events"
                 className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
-                aria-current={window.location.pathname === '/events' ? 'page' : undefined}
+                aria-current={router.pathname === '/events' ? 'page' : undefined}
               >
                 Events
               </Link>
@@ -404,7 +406,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 href="/contact"
                 className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
-                aria-current={window.location.pathname === '/contact' ? 'page' : undefined}
+                aria-current={router.pathname === '/contact' ? 'page' : undefined}
               >
                 Contact
               </Link>
