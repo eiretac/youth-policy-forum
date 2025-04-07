@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env');
+  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
 }
 
 interface GlobalWithMongoose extends Global {
@@ -18,34 +18,35 @@ declare const global: GlobalWithMongoose;
 let cached = global.mongoose;
 
 if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+  cached = global.mongoose = {
+    conn: null,
+    promise: null,
+  };
 }
 
-async function dbConnect() {
+export async function dbConnect() {
   if (cached.conn) {
     console.log('Using cached database connection');
     return cached.conn;
   }
 
   if (!cached.promise) {
-    console.log('Creating new database connection...');
     const opts = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
-      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-      connectTimeoutMS: 10000, // Give up initial connection after 10 seconds
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+      connectTimeoutMS: 10000,
+      maxPoolSize: 10,
+      minPoolSize: 5,
+      retryWrites: true,
+      retryReads: true,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI!, opts)
-      .then((mongoose) => {
-        console.log('Database connected successfully');
-        return mongoose;
-      })
-      .catch((error) => {
-        console.error('Database connection error:', error);
-        cached.promise = null;
-        throw new Error(`Database connection failed: ${error.message}`);
-      });
+    console.log('Creating new database connection...');
+    cached.promise = mongoose.connect(MONGODB_URI as string, opts).then((mongoose) => {
+      console.log('Database connection established');
+      return mongoose;
+    });
   }
 
   try {
@@ -58,6 +59,4 @@ async function dbConnect() {
   }
 
   return cached.conn;
-}
-
-export default dbConnect; 
+} 
