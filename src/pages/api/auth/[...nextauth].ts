@@ -1,8 +1,26 @@
-import NextAuth from 'next-auth';
+import NextAuth, { DefaultSession } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import dbConnect from '@/lib/db';
 import User from '@/models/User';
 import { compare } from 'bcryptjs';
+
+// Define custom types
+declare module "next-auth" {
+  interface User {
+    role?: string;
+  }
+  interface Session {
+    user: {
+      role?: string;
+    } & DefaultSession["user"]
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    role?: string;
+  }
+}
 
 export default NextAuth({
   providers: [
@@ -46,7 +64,6 @@ export default NextAuth({
   },
   pages: {
     signIn: '/auth/signin',
-    signUp: '/auth/signup',
   },
   callbacks: {
     async jwt({ token, user }) {
