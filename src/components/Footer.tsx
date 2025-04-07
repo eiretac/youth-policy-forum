@@ -31,7 +31,7 @@ export default function Footer() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <Logo className="h-8 w-auto mb-4" />
+              <Logo className="h-8 w-auto mb-4" colorVariant="light" />
               <p className="text-gray-300 mt-4 max-w-xs">
                 Empowering youth to shape policy and create positive change in society.
               </p>
