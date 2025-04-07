@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Event {
   id: string;
@@ -122,6 +122,18 @@ const getRandomEvent = (usedEvents: string[]) => {
   return availableEvents[Math.floor(Math.random() * availableEvents.length)];
 };
 
+const getScoreColor = (value: number) => {
+  if (value >= 75) return 'text-green-600';
+  if (value >= 50) return 'text-yellow-600';
+  return 'text-red-600';
+};
+
+const getScoreBarColor = (value: number) => {
+  if (value >= 75) return 'bg-green-500';
+  if (value >= 50) return 'bg-yellow-500';
+  return 'bg-red-500';
+};
+
 export default function PolicySimulator() {
   const [gameState, setGameState] = useState<GameState>(initialState);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
@@ -160,105 +172,133 @@ export default function PolicySimulator() {
     setFeedback('');
   };
 
-  const getScoreColor = (value: number) => {
-    if (value >= 75) return 'text-green-600 font-bold';
-    if (value >= 50) return 'text-yellow-600 font-bold';
-    return 'text-red-600 font-bold';
-  };
-
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-center mb-8 text-primary">Policy Impact Simulator</h1>
+          <motion.h1 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl font-bold text-center mb-8 text-primary"
+          >
+            Policy Impact Simulator
+          </motion.h1>
           
-          <div className="bg-white rounded-lg shadow-xl p-6 mb-8">
+          <div className="bg-white rounded-xl shadow-2xl p-6 mb-8 border border-gray-200">
             <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="text-center p-4 border rounded-lg bg-gray-50">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Environment</h3>
-                <p className={`text-3xl ${getScoreColor(gameState.environment)}`}>
-                  {gameState.environment}%
-                </p>
-              </div>
-              <div className="text-center p-4 border rounded-lg bg-gray-50">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Economy</h3>
-                <p className={`text-3xl ${getScoreColor(gameState.economy)}`}>
-                  {gameState.economy}%
-                </p>
-              </div>
-              <div className="text-center p-4 border rounded-lg bg-gray-50">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Society</h3>
-                <p className={`text-3xl ${getScoreColor(gameState.society)}`}>
-                  {gameState.society}%
-                </p>
-              </div>
+              {[
+                { label: 'Environment', value: gameState.environment },
+                { label: 'Economy', value: gameState.economy },
+                { label: 'Society', value: gameState.society }
+              ].map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="text-center p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+                >
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">{stat.label}</h3>
+                  <p className={`text-3xl ${getScoreColor(stat.value)} font-bold`}>
+                    {stat.value}%
+                  </p>
+                  <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <motion.div
+                      className={`h-full ${getScoreBarColor(stat.value)}`}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${stat.value}%` }}
+                      transition={{ duration: 0.5 }}
+                    />
+                  </div>
+                </motion.div>
+              ))}
             </div>
 
-            {feedback && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 bg-gray-50 border rounded-lg text-center text-gray-800"
-              >
-                {feedback}
-              </motion.div>
-            )}
+            <AnimatePresence mode="wait">
+              {feedback && (
+                <motion.div
+                  key="feedback"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="mb-6 p-4 bg-gray-50 border rounded-lg text-center text-gray-800 shadow-sm"
+                >
+                  {feedback}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {gameOver ? (
-              <div className="text-center">
-                <h2 className="text-2xl font-bold mb-4">Game Over!</h2>
-                <p className="mb-4">You made it through {gameState.turn - 1} turns!</p>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center"
+              >
+                <h2 className="text-2xl font-bold mb-4 text-primary">Game Over!</h2>
+                <p className="mb-4 text-gray-600">You made it through {gameState.turn - 1} turns!</p>
                 <div className="mb-4">
-                  <h3 className="font-semibold mb-2">Policy Impact History:</h3>
-                  <ul className="text-left list-disc pl-6">
+                  <h3 className="font-semibold mb-2 text-gray-800">Policy Impact History:</h3>
+                  <ul className="text-left list-disc pl-6 space-y-1">
                     {gameState.history.map((event, index) => (
-                      <li key={index} className="mb-1">{event}</li>
+                      <motion.li
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="text-gray-600"
+                      >
+                        {event}
+                      </motion.li>
                     ))}
                   </ul>
                 </div>
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={resetGame}
-                  className="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded"
+                  className="bg-gradient-to-r from-secondary to-accent hover:from-accent hover:to-secondary text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all"
                 >
                   Play Again
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             ) : currentEvent ? (
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-4 text-gray-800">{currentEvent.title}</h2>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-8"
+              >
+                <h2 className="text-2xl font-bold mb-4 text-primary">{currentEvent.title}</h2>
                 <p className="text-gray-600 mb-6">{currentEvent.description}</p>
                 <div className="space-y-4">
                   {currentEvent.choices.map((choice) => (
-                    <button
+                    <motion.button
                       key={choice.id}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => handleChoice(choice)}
-                      className="w-full text-left p-4 border rounded-lg hover:bg-gray-50 transition-colors bg-white"
+                      className="w-full text-left p-4 border rounded-lg hover:bg-gray-50 transition-all bg-white shadow-sm hover:shadow-md"
                     >
                       <p className="text-gray-800 font-medium mb-2">{choice.text}</p>
                       <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
                         <div>
-                          <p className="font-semibold">Impact:</p>
+                          <p className="font-semibold text-primary">Impact:</p>
                           <ul className="list-disc list-inside">
                             {Object.entries(choice.consequences).map(([key, value]) => (
-                              <li key={key} className={typeof value === 'number' && value > 0 ? 'text-green-600' : 'text-red-600'}>
+                              <li 
+                                key={key} 
+                                className={typeof value === 'number' && value > 0 ? 'text-green-600' : 'text-red-600'}
+                              >
                                 {key.charAt(0).toUpperCase() + key.slice(1)}: {typeof value === 'number' && value > 0 ? '+' : ''}{value}
                               </li>
                             ))}
                           </ul>
                         </div>
                       </div>
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
-              </div>
-            ) : (
-              <p>Loading...</p>
-            )}
-
-            <div className="mt-6 flex justify-between items-center border-t pt-4">
-              <p className="text-gray-600">Turn {gameState.turn} of 10</p>
-              <p className="text-xl font-bold text-gray-800">Total Impact: {gameState.score}</p>
-            </div>
+              </motion.div>
+            ) : null}
           </div>
         </div>
       </div>
