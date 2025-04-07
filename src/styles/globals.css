@@ -4,30 +4,37 @@
 
 @layer base {
   :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 214, 219, 220;
-    --background-end-rgb: 255, 255, 255;
-  }
-
-  .dark {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background-rgb: 4, 25, 44;
   }
-}
 
-@layer base {
   body {
-    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+    @apply bg-primary text-white;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors;
+    @apply bg-gradient-primary text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity;
   }
   
   .btn-secondary {
-    @apply bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600;
+    @apply bg-secondary text-white px-4 py-2 rounded-md hover:bg-secondary-600 transition-colors;
+  }
+
+  .btn-accent {
+    @apply bg-accent text-white px-4 py-2 rounded-md hover:bg-accent-600 transition-colors;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-primary bg-clip-text text-transparent;
+  }
+
+  .nav-link {
+    @apply text-white hover:text-secondary transition-colors;
+  }
+
+  .footer-link {
+    @apply text-gray-300 hover:text-secondary transition-colors;
   }
 } 

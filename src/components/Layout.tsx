@@ -1,14 +1,12 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useTheme } from '@/context/ThemeContext';
 import Logo from './Logo';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const { isDarkMode, toggleDarkMode } = useTheme();
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const firstFocusableElementRef = useRef<HTMLButtonElement>(null);
   const lastFocusableElementRef = useRef<HTMLButtonElement>(null);
@@ -131,7 +129,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Navigation */}
       <nav
-        className="bg-primary shadow-md fixed w-full z-50 transition-colors duration-300"
+        className="bg-primary shadow-md fixed w-full z-50"
         role="navigation"
         aria-label="Main navigation"
       >
@@ -145,7 +143,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="hidden md:flex items-center space-x-8">
               <Link 
                 href="/about" 
-                className="text-white hover:text-secondary transition-colors"
+                className="nav-link"
                 aria-current={router.pathname === '/about' ? 'page' : undefined}
               >
                 About
@@ -156,7 +154,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <button
                   onClick={() => toggleDropdown('Policy Areas')}
                   onKeyDown={(e) => handleDropdownKeyDown(e, 'Policy Areas')}
-                  className="text-white hover:text-secondary transition-colors"
+                  className="nav-link"
                   aria-expanded={activeDropdown === 'Policy Areas'}
                   aria-haspopup="true"
                 >
@@ -164,8 +162,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </button>
                 {activeDropdown === 'Policy Areas' && (
                   <div 
-                    id="policy-areas-dropdown"
-                    className="absolute right-0 mt-2 w-48 py-2 bg-primary rounded-lg shadow-xl transition-all duration-200 transform origin-top"
+                    className="absolute right-0 mt-2 w-48 py-2 bg-primary-800 rounded-lg shadow-xl"
                     role="menu"
                     aria-orientation="vertical"
                   >
@@ -173,7 +170,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       <Link
                         key={item.name}
                         href={item.href}
-                        className="block px-4 py-2 text-white hover:bg-primary-800 transition-colors"
+                        className="block px-4 py-2 text-white hover:bg-primary-700 transition-colors"
                         role="menuitem"
                         tabIndex={0}
                       >
@@ -189,7 +186,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <button
                   onClick={() => toggleDropdown('Get Involved')}
                   onKeyDown={(e) => handleDropdownKeyDown(e, 'Get Involved')}
-                  className="text-white hover:text-secondary transition-colors"
+                  className="nav-link"
                   aria-expanded={activeDropdown === 'Get Involved'}
                   aria-haspopup="true"
                 >
@@ -197,8 +194,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </button>
                 {activeDropdown === 'Get Involved' && (
                   <div 
-                    id="get-involved-dropdown"
-                    className="absolute right-0 mt-2 w-48 py-2 bg-primary rounded-lg shadow-xl transition-all duration-200 transform origin-top"
+                    className="absolute right-0 mt-2 w-48 py-2 bg-primary-800 rounded-lg shadow-xl"
                     role="menu"
                     aria-orientation="vertical"
                   >
@@ -206,7 +202,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       <Link
                         key={item.name}
                         href={item.href}
-                        className="block px-4 py-2 text-white hover:bg-primary-800 transition-colors"
+                        className="block px-4 py-2 text-white hover:bg-primary-700 transition-colors"
                         role="menuitem"
                         tabIndex={0}
                       >
@@ -219,14 +215,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
               <Link 
                 href="/events" 
-                className="text-white hover:text-secondary transition-colors"
+                className="nav-link"
                 aria-current={router.pathname === '/events' ? 'page' : undefined}
               >
                 Events
               </Link>
               <Link 
                 href="/contact" 
-                className="text-white hover:text-secondary transition-colors"
+                className="nav-link"
                 aria-current={router.pathname === '/contact' ? 'page' : undefined}
               >
                 Contact
@@ -240,23 +236,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-              </button>
-
-              {/* Dark Mode Toggle - Consider removing since we have a specific brand color scheme */}
-              <button
-                onClick={toggleDarkMode}
-                className="p-2 rounded-lg bg-primary-800 text-white hover:bg-primary-700 transition-colors"
-                aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              >
-                {isDarkMode ? (
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                ) : (
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                  </svg>
-                )}
               </button>
             </div>
 
@@ -284,7 +263,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile menu */}
         <div
           ref={mobileMenuRef}
           id="mobile-menu"
@@ -420,15 +399,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </button>
                 </div>
               </div>
-
-              <button
-                ref={lastFocusableElementRef}
-                onClick={toggleDarkMode}
-                className="w-full text-left px-3 py-2 text-white hover:bg-primary-800 transition-colors"
-                aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              >
-                {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-              </button>
             </div>
           </div>
         </div>
@@ -445,7 +415,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-primary-800 text-white">
+      <footer className="bg-primary-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
@@ -455,43 +425,45 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+              <h3 className="text-white text-lg font-semibold mb-4">Quick Links</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link href="/about" className="hover:text-secondary transition-colors">
+                  <Link href="/about" className="footer-link">
                     About Us
                   </Link>
                 </li>
                 <li>
-                  <Link href="/policy-areas" className="hover:text-secondary transition-colors">
+                  <Link href="/policy-areas" className="footer-link">
                     Policy Areas
                   </Link>
                 </li>
                 <li>
-                  <Link href="/get-involved" className="hover:text-secondary transition-colors">
+                  <Link href="/get-involved" className="footer-link">
                     Get Involved
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4">Contact</h3>
+              <h3 className="text-white text-lg font-semibold mb-4">Contact</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="mailto:info@youthpolicyforum.org" className="hover:text-secondary transition-colors">
+                  <a href="mailto:info@youthpolicyforum.org" className="footer-link">
                     info@youthpolicyforum.org
                   </a>
                 </li>
                 <li>
-                  <a href="tel:+15551234567" className="hover:text-secondary transition-colors">
+                  <a href="tel:+15551234567" className="footer-link">
                     +1 (555) 123-4567
                   </a>
                 </li>
-                <li>123 Policy Street, New York, NY 10001</li>
+                <li className="text-gray-300">
+                  123 Policy Street, New York, NY 10001
+                </li>
               </ul>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-primary-700 text-center text-sm">
+          <div className="mt-8 pt-8 border-t border-primary-700 text-center text-gray-300 text-sm">
             <p>© {new Date().getFullYear()} Youth Policy Forum. All rights reserved.</p>
           </div>
         </div>
