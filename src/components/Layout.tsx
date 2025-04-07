@@ -228,6 +228,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               >
                 Events
               </Link>
+
+              <Link 
+                href="/arcade" 
+                className="nav-link"
+                aria-current={router.pathname === '/arcade' ? 'page' : undefined}
+              >
+                Arcade
+              </Link>
+
               <Link 
                 href="/contact" 
                 className="nav-link"
@@ -411,6 +420,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               >
                 Events
               </Link>
+
+              <Link
+                href="/arcade"
+                className="block px-3 py-2 text-white hover:bg-primary-800 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+                aria-current={router.pathname === '/arcade' ? 'page' : undefined}
+              >
+                Arcade
+              </Link>
+
               <Link
                 href="/contact"
                 className="block px-3 py-2 text-white hover:bg-primary-800 transition-colors"
