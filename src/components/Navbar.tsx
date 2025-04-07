@@ -184,6 +184,14 @@ const Navbar = () => {
             Contact
           </Link>
 
+          <Link 
+            href="/blog" 
+            className={`nav-link ${router.pathname === '/blog' ? 'text-secondary' : 'text-gray-700 hover:text-secondary'}`}
+            aria-current={router.pathname === '/blog' ? 'page' : undefined}
+          >
+            Blog
+          </Link>
+
           {session ? (
             <div className="flex items-center space-x-4">
               <Link
@@ -419,6 +427,15 @@ const Navbar = () => {
                   aria-current={router.pathname === '/contact' ? 'page' : undefined}
                 >
                   Contact
+                </Link>
+
+                <Link
+                  href="/blog"
+                  className="block px-3 py-2 text-gray-700 hover:text-secondary transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                  aria-current={router.pathname === '/blog' ? 'page' : undefined}
+                >
+                  Blog
                 </Link>
 
                 {session ? (

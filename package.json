@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@portabletext/react": "^3.2.1",
     "autoprefixer": "^10.4.17",
     "bcryptjs": "^3.0.2",
     "framer-motion": "^12.6.3",
