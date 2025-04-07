@@ -84,45 +84,45 @@ const PolicyPuzzle: NextPage = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-b from-primary to-primary-dark py-16">
+      <div className="min-h-screen bg-gradient-to-b from-primary via-primary-800 to-primary-900 py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-white mb-4">Policy Puzzle</h1>
-            <p className="text-xl text-gray-300">
+            <h1 className="text-4xl font-bold text-white mb-4 drop-shadow-lg">Policy Puzzle</h1>
+            <p className="text-xl text-gray-200 drop-shadow">
               Connect policy goals with actions and outcomes to create effective solutions.
             </p>
           </div>
 
           {/* Game Area */}
-          <div className="bg-white rounded-lg shadow-xl p-6 mb-8">
+          <div className="bg-white rounded-xl shadow-2xl p-8 mb-8">
             {/* Score */}
-            <div className="flex justify-between items-center mb-6">
-              <div className="text-primary font-bold">Score: {score}/3</div>
+            <div className="flex justify-between items-center mb-8">
+              <div className="text-xl text-primary-900 font-bold">Score: {score}/3</div>
               <button
                 onClick={resetSelection}
-                className="px-4 py-2 text-white bg-secondary rounded-md hover:bg-secondary-dark transition-colors"
+                className="px-4 py-2 text-white bg-secondary rounded-lg hover:bg-secondary-700 transition-colors duration-200 shadow-md"
               >
                 Reset Selection
               </button>
             </div>
 
             {/* Selected Pieces */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {['goal', 'action', 'outcome'].map((category) => (
                 <div
                   key={category}
-                  className="bg-gray-100 p-4 rounded-lg min-h-[120px] flex items-center justify-center text-center"
+                  className="bg-gray-50 p-6 rounded-xl shadow-md min-h-[140px] flex items-center justify-center text-center border-2 border-gray-100"
                 >
                   {selectedPieces.find(p => p.category === category) ? (
                     <div
                       onClick={() => handleRemovePiece(selectedPieces.find(p => p.category === category)!)}
-                      className="cursor-pointer p-4 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+                      className="cursor-pointer p-4 bg-primary-800 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 shadow-md font-medium w-full"
                     >
                       {selectedPieces.find(p => p.category === category)?.text}
                     </div>
                   ) : (
-                    <span className="text-gray-400">
+                    <span className="text-gray-500 font-medium">
                       Select a {category.charAt(0).toUpperCase() + category.slice(1)}
                     </span>
                   )}
@@ -131,18 +131,18 @@ const PolicyPuzzle: NextPage = () => {
             </div>
 
             {/* Available Pieces */}
-            <div className="space-y-4">
+            <div className="space-y-6">
               {['goal', 'action', 'outcome'].map((category) => (
-                <div key={category} className="space-y-2">
-                  <h3 className="font-bold text-primary capitalize">{category}s</h3>
-                  <div className="flex flex-wrap gap-2">
+                <div key={category} className="space-y-3">
+                  <h3 className="text-lg font-bold text-primary-900 capitalize">{category}s</h3>
+                  <div className="flex flex-wrap gap-3">
                     {availablePieces
                       .filter(piece => piece.category === category)
                       .map(piece => (
                         <button
                           key={piece.id}
                           onClick={() => handlePieceClick(piece)}
-                          className="px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                          className="px-5 py-3 bg-gray-100 text-primary-800 rounded-lg hover:bg-secondary hover:text-white transition-all duration-200 shadow-sm font-medium"
                         >
                           {piece.text}
                         </button>
@@ -154,8 +154,10 @@ const PolicyPuzzle: NextPage = () => {
 
             {/* Message */}
             {message && (
-              <div className={`mt-6 p-4 rounded-lg text-center ${
-                message.includes('Correct') ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+              <div className={`mt-8 p-5 rounded-xl text-center font-medium shadow-md ${
+                message.includes('Correct') 
+                  ? 'bg-green-50 text-green-800 border-2 border-green-200' 
+                  : 'bg-yellow-50 text-yellow-800 border-2 border-yellow-200'
               }`}>
                 {message}
               </div>
@@ -166,11 +168,11 @@ const PolicyPuzzle: NextPage = () => {
               <button
                 onClick={checkCombination}
                 disabled={selectedPieces.length !== 3}
-                className={`px-6 py-3 rounded-lg font-bold ${
+                className={`px-8 py-4 rounded-xl font-bold text-lg shadow-lg ${
                   selectedPieces.length === 3
-                    ? 'bg-secondary text-white hover:bg-secondary-dark'
+                    ? 'bg-secondary text-white hover:bg-secondary-700 transform hover:-translate-y-1'
                     : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                } transition-colors`}
+                } transition-all duration-200`}
               >
                 Check Policy
               </button>
@@ -179,16 +181,16 @@ const PolicyPuzzle: NextPage = () => {
 
           {/* Game Complete */}
           {isComplete && (
-            <div className="text-center bg-green-100 p-6 rounded-lg">
-              <h2 className="text-2xl font-bold text-green-800 mb-4">
+            <div className="text-center bg-green-50 p-8 rounded-xl shadow-2xl border-2 border-green-200">
+              <h2 className="text-3xl font-bold text-green-800 mb-4">
                 Congratulations! You've completed the Policy Puzzle!
               </h2>
-              <p className="text-green-700 mb-6">
+              <p className="text-green-700 text-lg mb-6">
                 You've demonstrated a great understanding of how policy goals, actions, and outcomes connect.
               </p>
               <Link
                 href="/arcade"
-                className="inline-block px-6 py-3 bg-secondary text-white rounded-lg hover:bg-secondary-dark transition-colors"
+                className="inline-block px-8 py-4 bg-secondary text-white rounded-xl hover:bg-secondary-700 transition-all duration-200 shadow-lg transform hover:-translate-y-1 font-bold text-lg"
               >
                 Try Another Game
               </Link>
