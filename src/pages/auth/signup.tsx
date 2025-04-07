@@ -56,6 +56,13 @@ export default function SignUp() {
       }
 
       if (!res.ok) {
+        // Handle specific error cases
+        if (res.status === 504) {
+          throw new Error('Request timed out. Please try again.');
+        }
+        if (res.status === 503) {
+          throw new Error('Database service unavailable. Please try again later.');
+        }
         throw new Error(data.message || 'Something went wrong');
       }
 

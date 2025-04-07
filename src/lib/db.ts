@@ -31,6 +31,9 @@ async function dbConnect() {
     console.log('Creating new database connection...');
     const opts = {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
+      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+      connectTimeoutMS: 10000, // Give up initial connection after 10 seconds
     };
 
     cached.promise = mongoose.connect(MONGODB_URI!, opts)
@@ -41,7 +44,7 @@ async function dbConnect() {
       .catch((error) => {
         console.error('Database connection error:', error);
         cached.promise = null;
-        throw error;
+        throw new Error(`Database connection failed: ${error.message}`);
       });
   }
 
@@ -50,7 +53,7 @@ async function dbConnect() {
   } catch (e) {
     console.error('Failed to establish database connection:', e);
     cached.promise = null;
-    throw e;
+    throw new Error(`Failed to connect to database: ${e.message}`);
   }
 
   return cached.conn;

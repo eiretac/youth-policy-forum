@@ -81,6 +81,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(201).json(userResponse);
   } catch (error: any) {
     console.error('Signup error:', error);
+    
+    // Handle specific error cases
+    if (error.message.includes('timeout')) {
+      return res.status(504).json({ 
+        message: 'Request timed out. Please try again.',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+
+    if (error.message.includes('database')) {
+      return res.status(503).json({ 
+        message: 'Database service unavailable. Please try again later.',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+
     // Log the full error object in development
     if (process.env.NODE_ENV === 'development') {
       console.error('Full error details:', {
@@ -89,8 +105,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         name: error.name,
       });
     }
+
     return res.status(500).json({ 
-      message: error.message || 'Error creating user',
+      message: 'An error occurred while creating your account. Please try again.',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
