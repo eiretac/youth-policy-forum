@@ -47,7 +47,13 @@ export default function SignUp() {
         }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (e) {
+        console.error('Failed to parse response:', e);
+        throw new Error('Server response was invalid');
+      }
 
       if (!res.ok) {
         throw new Error(data.message || 'Something went wrong');
