@@ -3,11 +3,50 @@ import { sanityClient } from '@/lib/sanity';
 import { urlFor } from '@/lib/sanity';
 import { Post } from '@/types';
 import Layout from '@/components/Layout';
-import { PortableText } from '@portabletext/react';
+import { PortableText, PortableTextComponents } from '@portabletext/react';
 import Head from 'next/head';
 
 interface BlogPostProps {
   post: Post;
+}
+
+// Custom components for PortableText
+const customComponents: PortableTextComponents = {
+  block: {
+    // Ex. 1: customizing common block types
+    h1: ({children}) => <h1 className="text-primary text-4xl font-bold my-6">{children}</h1>,
+    h2: ({children}) => <h2 className="text-primary text-3xl font-bold my-5">{children}</h2>,
+    h3: ({children}) => <h3 className="text-primary text-2xl font-bold my-4">{children}</h3>,
+    h4: ({children}) => <h4 className="text-primary text-xl font-bold my-3">{children}</h4>,
+    normal: ({children}) => <p className="text-black text-lg my-4">{children}</p>,
+    blockquote: ({children}) => <blockquote className="border-l-4 border-gray-300 pl-4 italic text-black my-6">{children}</blockquote>,
+  },
+  list: {
+    // Ex. 1: customizing common list types
+    bullet: ({children}) => <ul className="list-disc list-inside text-black my-4 pl-4">{children}</ul>,
+    number: ({children}) => <ol className="list-decimal list-inside text-black my-4 pl-4">{children}</ol>,
+  },
+  listItem: {
+    // Ex. 1: customizing common list item types
+    bullet: ({children}) => <li className="text-black my-2">{children}</li>,
+    number: ({children}) => <li className="text-black my-2">{children}</li>,
+  },
+  marks: {
+    link: ({children, value}) => {
+      const rel = !value.href.startsWith('/') ? 'noreferrer noopener' : undefined
+      return (
+        <a href={value.href} rel={rel} className="text-primary hover:underline">
+          {children}
+        </a>
+      )
+    },
+    strong: ({children}) => <strong className="font-bold text-black">{children}</strong>,
+    em: ({children}) => <em className="italic text-black">{children}</em>,
+  },
+  // You can add custom types if needed, e.g., for images or code blocks
+  // types: {
+  //   image: SampleImageComponent,
+  // },
 }
 
 export default function InsightPost({ post }: BlogPostProps) {
@@ -64,23 +103,8 @@ export default function InsightPost({ post }: BlogPostProps) {
 
         {/* Content Section */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="prose prose-lg max-w-none 
-            prose-headings:text-primary 
-            prose-p:text-black 
-            prose-strong:text-black 
-            prose-ul:text-black 
-            prose-ol:text-black 
-            prose-li:text-black 
-            prose-blockquote:text-black
-            prose-a:text-primary
-            prose-code:text-black
-            prose-pre:text-black
-            prose-em:text-black
-            prose-table:text-black
-            prose-th:text-black
-            prose-td:text-black
-            prose-caption:text-black">
-            <PortableText value={post.body} />
+          <div className="max-w-none">
+            <PortableText value={post.body} components={customComponents} />
           </div>
 
           {/* Categories */}
