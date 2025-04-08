@@ -75,7 +75,11 @@ export default function InsightPost({ post }: BlogPostProps) {
             prose-a:text-primary
             prose-code:text-black
             prose-pre:text-black
-            prose-em:text-black">
+            prose-em:text-black
+            prose-table:text-black
+            prose-th:text-black
+            prose-td:text-black
+            prose-caption:text-black">
             <PortableText value={post.body} />
           </div>
 
