@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Link from 'next/link'; // Import Link for the disclaimer
 
 export default function NewsletterSignup() {
   const [email, setEmail] = useState('');
@@ -50,13 +51,13 @@ export default function NewsletterSignup() {
   };
 
   return (
-    <section className="bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 py-16">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-3xl font-extrabold text-white mb-4">
-          Stay Updated with the Youth Policy Forum
+    <section className="bg-blue-50 py-16">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 className="text-4xl font-extrabold text-gray-900 mb-4">
+          Subscribe Our Newsletter
         </h2>
-        <p className="text-lg text-blue-100 mb-8 max-w-2xl mx-auto">
-          Subscribe to our newsletter for the latest insights, events, and opportunities in youth policy.
+        <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+          Receive the latest updates, important news, and exclusive content directly to your inbox.
         </p>
 
         <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
@@ -72,29 +73,36 @@ export default function NewsletterSignup() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-grow px-5 py-3 border border-transparent rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-700 focus:ring-white text-gray-900"
+              className="flex-grow px-5 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               placeholder="Enter your email"
               disabled={isSubmitting}
             />
             <button
               type="submit"
-              className="sm:w-auto px-5 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-blue-600 bg-white hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="sm:w-auto px-5 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting || submitStatus === 'success'}
             >
               {isSubmitting ? 'Subscribing...' : submitStatus === 'success' ? 'Subscribed!' : 'Subscribe'}
             </button>
           </div>
           {submitStatus === 'success' && (
-            <p className="mt-3 text-sm text-green-200">
+            <p className="mt-3 text-sm text-green-600">
               Success! Thanks for subscribing.
             </p>
           )}
           {submitStatus === 'error' && (
-            <p className="mt-3 text-sm text-red-200">
+            <p className="mt-3 text-sm text-red-600">
               Something went wrong. Please try again.
             </p>
           )}
         </form>
+        
+        <p className="mt-4 text-sm text-gray-500">
+          By clicking Sign Up you're confirming that you agree with our 
+          <Link href="/terms" className="underline hover:text-gray-700 transition-colors ml-1">
+             Terms and Conditions.
+          </Link>
+        </p>
       </div>
     </section>
   );
