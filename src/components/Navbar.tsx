@@ -184,12 +184,12 @@ const Navbar = () => {
             Contact
           </Link>
 
-          <Link 
-            href="/blog" 
-            className={`nav-link ${router.pathname === '/blog' ? 'text-secondary' : 'text-gray-700 hover:text-secondary'}`}
-            aria-current={router.pathname === '/blog' ? 'page' : undefined}
+          <Link
+            href="/insights"
+            className={`nav-link ${router.pathname === '/insights' ? 'text-secondary' : 'text-gray-700 hover:text-secondary'}`}
+            aria-current={router.pathname === '/insights' ? 'page' : undefined}
           >
-            Blog
+            Insights
           </Link>
 
           {session ? (
@@ -430,12 +430,13 @@ const Navbar = () => {
                 </Link>
 
                 <Link
-                  href="/blog"
-                  className="block px-3 py-2 text-gray-700 hover:text-secondary transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                  aria-current={router.pathname === '/blog' ? 'page' : undefined}
+                  href="/insights"
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                    router.pathname === '/insights' ? 'text-secondary bg-secondary/10' : 'text-gray-700 hover:text-secondary hover:bg-gray-50'
+                  }`}
+                  aria-current={router.pathname === '/insights' ? 'page' : undefined}
                 >
-                  Blog
+                  Insights
                 </Link>
 
                 {session ? (

@@ -20,7 +20,7 @@ export default function CategoryPage({ posts, category }: CategoryPageProps) {
         )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {posts.map((post) => (
-            <Link key={post._id} href={`/blog/${post.slug.current}`}>
+            <Link key={post._id} href={`/insights/${post.slug.current}`}>
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                 {post.mainImage && (
                   <img
