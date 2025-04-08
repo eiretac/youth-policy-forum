@@ -14,16 +14,20 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const dropdownItems = {
-    'Policy Areas': [
-      { name: 'Education', href: '/policy/education' },
-      { name: 'Environment', href: '/policy/environment' },
-      { name: 'Healthcare', href: '/policy/healthcare' },
-      { name: 'Technology', href: '/policy/technology' },
-    ],
-    'Get Involved': [
-      { name: 'Volunteer', href: '/get-involved/volunteer' },
-      { name: 'Donate', href: '/get-involved/donate' },
+    'About': [
+      { name: 'About Us', href: '/about' },
+      { name: 'Our Team', href: '/team' },
       { name: 'Partnerships', href: '/partnerships' },
+    ],
+    'Engage': [
+      { name: 'Get Involved', href: '/get-involved' },
+      { name: 'Events', href: '/events' },
+      { name: 'Contact Us', href: '/contact' },
+    ],
+    'Resources': [
+      { name: 'Policy Areas', href: '/policy-areas' },
+      { name: 'Resource Hub', href: '/resources' },
+      { name: 'Insights', href: '/insights' },
     ],
   };
 
@@ -40,6 +44,7 @@ const Navbar = () => {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setIsMenuOpen(false);
     }
   };
 
@@ -47,404 +52,190 @@ const Navbar = () => {
     setActiveDropdown(activeDropdown === name ? null : name);
   };
 
-  return (
-    <nav className="relative">
-      <div className="flex justify-between h-16">
-        <div className="flex items-center">
-          <Logo />
-        </div>
+  const renderDropdown = (name: keyof typeof dropdownItems, isMobile = false) => {
+    const mobileSuffix = isMobile ? ' Mobile' : '';
+    const dropdownId = `mobile-${name.toLowerCase().replace(' ', '-')}-dropdown`;
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-8">
-          <Link 
-            href="/about" 
-            className={`nav-link ${router.pathname === '/about' ? 'text-secondary' : 'text-gray-700 hover:text-secondary'}`}
-            aria-current={router.pathname === '/about' ? 'page' : undefined}
+    return (
+      <div className="relative" key={name}>
+        <button
+          onClick={() => toggleDropdown(name + mobileSuffix)}
+          className={`nav-link flex items-center ${isMobile ? 'w-full text-left px-3 py-2 justify-between' : ''} ${
+            activeDropdown === (name + mobileSuffix) ? 'text-secondary' : 'text-gray-700 hover:text-secondary'
+          }`}
+          aria-expanded={activeDropdown === (name + mobileSuffix)}
+          aria-haspopup="true"
+          aria-controls={isMobile ? dropdownId : undefined}
+        >
+          {name}
+          <motion.svg
+            className={`ml-1 h-4 w-4 ${isMobile ? '' : ''}`}
+            animate={{ rotate: activeDropdown === (name + mobileSuffix) ? 180 : 0 }}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            About
-          </Link>
-          
-          {/* Policy Areas Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => toggleDropdown('Policy Areas')}
-              className={`nav-link flex items-center ${
-                activeDropdown === 'Policy Areas' ? 'text-secondary' : 'text-gray-700 hover:text-secondary'
-              }`}
-              aria-expanded={activeDropdown === 'Policy Areas'}
-              aria-haspopup="true"
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </motion.svg>
+        </button>
+        <AnimatePresence>
+          {activeDropdown === (name + mobileSuffix) && (
+            <motion.div
+              initial={isMobile ? { height: 0, opacity: 0 } : { opacity: 0, y: -10 }}
+              animate={isMobile ? { height: 'auto', opacity: 1 } : { opacity: 1, y: 0 }}
+              exit={isMobile ? { height: 0, opacity: 0 } : { opacity: 0, y: -10 }}
+              className={isMobile ? "overflow-hidden pl-3" : "absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50"}
+              id={isMobile ? dropdownId : undefined}
             >
-              Policy Areas
-              <motion.svg
-                className="ml-1 h-4 w-4"
-                animate={{ rotate: activeDropdown === 'Policy Areas' ? 180 : 0 }}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </motion.svg>
-            </button>
-            <AnimatePresence>
-              {activeDropdown === 'Policy Areas' && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50"
+              {dropdownItems[name].map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`block ${isMobile ? 'px-3' : 'px-4'} py-2 text-gray-700 hover:bg-gray-50 hover:text-secondary transition-colors ${isMobile ? 'text-base' : 'text-sm'}`}
+                  onClick={() => {
+                    setActiveDropdown(null);
+                    if (isMobile) setIsMenuOpen(false);
+                  }}
+                  aria-current={router.pathname === item.href ? 'page' : undefined}
                 >
-                  {dropdownItems['Policy Areas'].map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-secondary transition-colors"
-                      onClick={() => setActiveDropdown(null)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Get Involved Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => toggleDropdown('Get Involved')}
-              className={`nav-link flex items-center ${
-                activeDropdown === 'Get Involved' ? 'text-secondary' : 'text-gray-700 hover:text-secondary'
-              }`}
-              aria-expanded={activeDropdown === 'Get Involved'}
-              aria-haspopup="true"
-            >
-              Get Involved
-              <motion.svg
-                className="ml-1 h-4 w-4"
-                animate={{ rotate: activeDropdown === 'Get Involved' ? 180 : 0 }}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </motion.svg>
-            </button>
-            <AnimatePresence>
-              {activeDropdown === 'Get Involved' && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50"
-                >
-                  {dropdownItems['Get Involved'].map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-secondary transition-colors"
-                      onClick={() => setActiveDropdown(null)}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          <Link 
-            href="/events" 
-            className={`nav-link ${router.pathname === '/events' ? 'text-secondary' : 'text-gray-700 hover:text-secondary'}`}
-            aria-current={router.pathname === '/events' ? 'page' : undefined}
-          >
-            Events
-          </Link>
-
-          <Link 
-            href="/arcade" 
-            className={`nav-link ${router.pathname === '/arcade' ? 'text-secondary' : 'text-gray-700 hover:text-secondary'}`}
-            aria-current={router.pathname === '/arcade' ? 'page' : undefined}
-          >
-            Arcade
-          </Link>
-
-          <Link 
-            href="/resources" 
-            className={`nav-link ${router.pathname === '/resources' ? 'text-secondary' : 'text-gray-700 hover:text-secondary'}`}
-            aria-current={router.pathname === '/resources' ? 'page' : undefined}
-          >
-            Resources
-          </Link>
-
-          <Link 
-            href="/contact" 
-            className={`nav-link ${router.pathname === '/contact' ? 'text-secondary' : 'text-gray-700 hover:text-secondary'}`}
-            aria-current={router.pathname === '/contact' ? 'page' : undefined}
-          >
-            Contact
-          </Link>
-
-          <Link
-            href="/insights"
-            className={`nav-link ${router.pathname === '/insights' ? 'text-secondary' : 'text-gray-700 hover:text-secondary'}`}
-            aria-current={router.pathname === '/insights' ? 'page' : undefined}
-          >
-            Insights
-          </Link>
-
-          {session ? (
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/member-area"
-                className="nav-link text-gray-700 hover:text-secondary"
-              >
-                Member Area
-              </Link>
-              <button
-                onClick={() => signOut()}
-                className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-600 transition-colors"
-              >
-                Sign Out
-              </button>
-            </div>
-          ) : (
-            <Link
-              href="/auth/signin"
-              className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-600 transition-colors"
-            >
-              Sign In
-            </Link>
+                  {item.name}
+                </Link>
+              ))}
+            </motion.div>
           )}
+        </AnimatePresence>
+      </div>
+    );
+  };
 
-          {/* Search Form */}
-          <form onSubmit={handleSearch} className="relative">
-            <input
-              type="search"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-40 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-secondary focus:w-60 transition-all"
-            />
-            <button
-              type="submit"
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-secondary"
-              aria-label="Search"
+  return (
+    <nav className={`sticky top-0 z-50 transition-shadow duration-300 ${isScrolled ? 'shadow-md bg-white' : 'bg-white'}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <Logo />
+          </div>
+
+          <div className="hidden md:flex items-center space-x-8">
+            {(Object.keys(dropdownItems) as Array<keyof typeof dropdownItems>).map((name) => renderDropdown(name))}
+
+            <Link
+              href="/arcade"
+              className={`nav-link ${router.pathname === '/arcade' ? 'text-secondary' : 'text-gray-700 hover:text-secondary'}`}
+              aria-current={router.pathname === '/arcade' ? 'page' : undefined}
             >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
-          </form>
-        </div>
+              Arcade
+            </Link>
 
-        {/* Mobile menu button */}
-        <div className="md:hidden flex items-center">
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-2 rounded-lg text-gray-700 hover:text-secondary transition-colors"
-            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-menu"
-          >
-            {isMenuOpen ? (
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+            {session ? (
+              <div className="flex items-center space-x-4">
+                <Link
+                  href="/member-area"
+                  className="nav-link text-gray-700 hover:text-secondary"
+                  aria-current={router.pathname === '/member-area' ? 'page' : undefined}
+                >
+                  Member Area
+                </Link>
+                <button
+                  onClick={() => signOut()}
+                  className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-600 transition-colors text-sm font-medium"
+                >
+                  Sign Out
+                </button>
+              </div>
             ) : (
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              <Link
+                href="/auth/signin"
+                className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-600 transition-colors text-sm font-medium"
+              >
+                Sign In
+              </Link>
             )}
-          </motion.button>
+
+            <form onSubmit={handleSearch} className="relative">
+              <input
+                type="search"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-32 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary focus:w-48 transition-all text-sm"
+              />
+              <button
+                type="submit"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-secondary"
+                aria-label="Search"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            </form>
+          </div>
+
+          <div className="md:hidden flex items-center">
+            <form onSubmit={handleSearch} className="relative mr-2">
+              <button
+                type="submit"
+                className="p-2 rounded-lg text-gray-700 hover:text-secondary transition-colors"
+                aria-label="Search"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            </form>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 rounded-lg text-gray-700 hover:text-secondary transition-colors"
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
+            >
+              {isMenuOpen ? (
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </motion.button>
+          </div>
         </div>
       </div>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, x: '100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            className="md:hidden fixed inset-0 bg-white z-50"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Mobile menu"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg border-t border-gray-200 z-40"
+            id="mobile-menu"
           >
-            <div className="h-full overflow-y-auto">
-              <div className="px-4 pt-5 pb-6 space-y-1">
-                {/* Mobile Search */}
-                <form onSubmit={handleSearch} className="mb-4">
-                  <div className="relative">
-                    <input
-                      type="search"
-                      placeholder="Search..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg bg-gray-100 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-secondary"
-                    />
-                    <button
-                      type="submit"
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-secondary"
-                      aria-label="Search"
-                    >
-                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </button>
-                  </div>
-                </form>
+            <div className="px-4 pt-5 pb-6 space-y-1">
+              {(Object.keys(dropdownItems) as Array<keyof typeof dropdownItems>).map((name) => renderDropdown(name, true))}
 
-                <Link
-                  href="/about"
-                  className="block px-3 py-2 text-gray-700 hover:text-secondary transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                  aria-current={router.pathname === '/about' ? 'page' : undefined}
-                >
-                  About
-                </Link>
+              <Link
+                href="/arcade"
+                className="block px-3 py-2 text-base text-gray-700 hover:text-secondary transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+                aria-current={router.pathname === '/arcade' ? 'page' : undefined}
+              >
+                Arcade
+              </Link>
 
-                {/* Policy Areas Mobile Dropdown */}
-                <div className="relative">
-                  <button
-                    onClick={() => toggleDropdown('Policy Areas Mobile')}
-                    className="w-full text-left px-3 py-2 text-gray-700 hover:text-secondary transition-colors flex items-center justify-between"
-                    aria-expanded={activeDropdown === 'Policy Areas Mobile'}
-                    aria-haspopup="true"
-                    aria-controls="mobile-policy-areas-dropdown"
-                  >
-                    Policy Areas
-                    <motion.svg
-                      className="h-4 w-4"
-                      animate={{ rotate: activeDropdown === 'Policy Areas Mobile' ? 180 : 0 }}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </motion.svg>
-                  </button>
-                  <AnimatePresence>
-                    {activeDropdown === 'Policy Areas Mobile' && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden"
-                        id="mobile-policy-areas-dropdown"
-                      >
-                        {dropdownItems['Policy Areas'].map((item) => (
-                          <Link
-                            key={item.name}
-                            href={item.href}
-                            className="block px-6 py-2 text-gray-700 hover:text-secondary transition-colors"
-                            onClick={() => setIsMenuOpen(false)}
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* Get Involved Mobile Dropdown */}
-                <div className="relative">
-                  <button
-                    onClick={() => toggleDropdown('Get Involved Mobile')}
-                    className="w-full text-left px-3 py-2 text-gray-700 hover:text-secondary transition-colors flex items-center justify-between"
-                    aria-expanded={activeDropdown === 'Get Involved Mobile'}
-                    aria-haspopup="true"
-                    aria-controls="mobile-get-involved-dropdown"
-                  >
-                    Get Involved
-                    <motion.svg
-                      className="h-4 w-4"
-                      animate={{ rotate: activeDropdown === 'Get Involved Mobile' ? 180 : 0 }}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </motion.svg>
-                  </button>
-                  <AnimatePresence>
-                    {activeDropdown === 'Get Involved Mobile' && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden"
-                        id="mobile-get-involved-dropdown"
-                      >
-                        {dropdownItems['Get Involved'].map((item) => (
-                          <Link
-                            key={item.name}
-                            href={item.href}
-                            className="block px-6 py-2 text-gray-700 hover:text-secondary transition-colors"
-                            onClick={() => setIsMenuOpen(false)}
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                <Link
-                  href="/events"
-                  className="block px-3 py-2 text-gray-700 hover:text-secondary transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                  aria-current={router.pathname === '/events' ? 'page' : undefined}
-                >
-                  Events
-                </Link>
-
-                <Link
-                  href="/arcade"
-                  className="block px-3 py-2 text-gray-700 hover:text-secondary transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                  aria-current={router.pathname === '/arcade' ? 'page' : undefined}
-                >
-                  Arcade
-                </Link>
-
-                <Link
-                  href="/resources"
-                  className="block px-3 py-2 text-gray-700 hover:text-secondary transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                  aria-current={router.pathname === '/resources' ? 'page' : undefined}
-                >
-                  Resources
-                </Link>
-
-                <Link
-                  href="/contact"
-                  className="block px-3 py-2 text-gray-700 hover:text-secondary transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                  aria-current={router.pathname === '/contact' ? 'page' : undefined}
-                >
-                  Contact
-                </Link>
-
-                <Link
-                  href="/insights"
-                  className={`block px-3 py-2 rounded-md text-base font-medium ${
-                    router.pathname === '/insights' ? 'text-secondary bg-secondary/10' : 'text-gray-700 hover:text-secondary hover:bg-gray-50'
-                  }`}
-                  aria-current={router.pathname === '/insights' ? 'page' : undefined}
-                >
-                  Insights
-                </Link>
-
+              <div className="border-t border-gray-200 pt-4 mt-4 space-y-1">
                 {session ? (
                   <>
                     <Link
                       href="/member-area"
-                      className="block px-3 py-2 text-gray-700 hover:text-secondary transition-colors"
+                      className="block px-3 py-2 text-base text-gray-700 hover:text-secondary transition-colors"
                       onClick={() => setIsMenuOpen(false)}
+                      aria-current={router.pathname === '/member-area' ? 'page' : undefined}
                     >
                       Member Area
                     </Link>
@@ -453,7 +244,7 @@ const Navbar = () => {
                         signOut();
                         setIsMenuOpen(false);
                       }}
-                      className="block w-full text-left px-3 py-2 text-gray-700 hover:text-secondary transition-colors"
+                      className="block w-full text-left px-3 py-2 text-base text-gray-700 hover:text-secondary transition-colors"
                     >
                       Sign Out
                     </button>
@@ -461,7 +252,7 @@ const Navbar = () => {
                 ) : (
                   <Link
                     href="/auth/signin"
-                    className="block px-3 py-2 text-gray-700 hover:text-secondary transition-colors"
+                    className="block px-3 py-2 text-base text-gray-700 hover:text-secondary transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Sign In
