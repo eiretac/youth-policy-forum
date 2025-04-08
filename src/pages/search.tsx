@@ -9,12 +9,13 @@ import { sanityClient } from '@/lib/sanity'; // Assuming correct path
 // Define a generic search result type
 interface SearchResult {
   _id: string;
-  _type: string; // To identify the type (post, teamMember, etc.)
-  title?: string; // Common field
-  name?: string; // For team members
+  _type: string; 
+  title?: string; 
+  name?: string; 
   slug?: { current: string };
-  excerpt?: string;
-  // Add other relevant fields you might want to display
+  excerpt?: string; // For posts
+  description?: string; // For resources
+  role?: string; // For team members
 }
 
 export const getServerSideProps: GetServerSideProps<{
@@ -30,27 +31,31 @@ export const getServerSideProps: GetServerSideProps<{
     // Alternative GROQ Query using boost()
     const sanityQuery = `
       *[
-        _type in ['post', 'teamMember'] &&
+        _type in ['post', 'teamMember', 'resource'] &&
         // Use boost for weighted keyword matching
-        boost(title match $query, 3) ||
-        boost(name match $query, 3) || // Boost titles/names
-        boost(role match $query, 1) ||
-        boost(excerpt match $query, 2) || // Boost excerpts slightly
-        boost(pt::text(body) match $query, 1) ||
-        boost(pt::text(bio) match $query, 1)
+        (
+          boost(title match $query, 3) ||
+          boost(name match $query, 3) || 
+          boost(role match $query, 1) ||
+          boost(excerpt match $query, 2) || 
+          boost(description match $query, 2) || // Add resource description
+          boost(pt::text(body) match $query, 1) ||
+          boost(pt::text(bio) match $query, 1)
+        )
       ]
-      | score( // Use score primarily for ranking based on boost
+      | score( 
           boost(title match $query, 3),
           boost(name match $query, 3),
           boost(role match $query, 1),
           boost(excerpt match $query, 2),
+          boost(description match $query, 2), // Add resource description to score
           boost(pt::text(body) match $query, 1),
           boost(pt::text(bio) match $query, 1)
         )
       | order(_score desc) {
         _id,
         _type,
-        _score, // Keep score for debugging
+        _score, 
         _type == 'post' => {
           title,
           slug,
@@ -59,6 +64,12 @@ export const getServerSideProps: GetServerSideProps<{
         _type == 'teamMember' => {
           name,
           role
+        },
+        // Add projection for resource type
+        _type == 'resource' => {
+          title,
+          slug,
+          description
         }
       }[0...20]
     `;
@@ -103,19 +114,23 @@ const SearchPage = ({ query, results }: InferGetServerSidePropsType<typeof getSe
       case 'post':
         return `/insights/${result.slug?.current || result._id}`;
       case 'teamMember':
-        return '/team'; // Link to the main team page
-      // Add cases for other types
+        return '/team'; 
+      // Add case for resource
+      case 'resource':
+        return `/resources/${result.slug?.current || result._id}`; // Assuming resource pages exist
       default:
-        return '/'; // Fallback link
+        return '/'; 
     }
   };
 
   const getResultTitle = (result: SearchResult): string => {
+    // Title exists on post and resource
     return result.title || result.name || 'Untitled';
   };
 
   const getResultExcerpt = (result: SearchResult): string | undefined => {
-    return result.excerpt; // Add logic for other types if needed
+    // Use excerpt for post, description for resource
+    return result.excerpt || result.description;
   };
 
   return (
@@ -162,7 +177,10 @@ const SearchPage = ({ query, results }: InferGetServerSidePropsType<typeof getSe
                   <li key={result._id} className="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
                     <Link href={getResultLink(result)} className="group">
                       <span className="text-xs uppercase font-semibold text-secondary tracking-wider mb-1 block group-hover:underline">
-                        {result._type === 'teamMember' ? 'Team Member' : result._type} 
+                        {/* Display type name */}
+                        {result._type === 'teamMember' ? 'Team Member' : 
+                         result._type === 'post' ? 'Insight' : 
+                         result._type === 'resource' ? 'Resource' : result._type}
                       </span>
                       <h2 className="text-xl font-semibold text-primary mb-2 group-hover:underline">
                         {getResultTitle(result)}

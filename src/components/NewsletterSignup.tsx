@@ -54,7 +54,7 @@ export default function NewsletterSignup() {
     <section className="bg-blue-50 py-16">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-4xl font-extrabold text-gray-900 mb-4">
-          Subscribe Our Newsletter
+          Subscribe to Our Newsletter
         </h2>
         <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
           Receive the latest updates, important news, and exclusive content directly to your inbox.
