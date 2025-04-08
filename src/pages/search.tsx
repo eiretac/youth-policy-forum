@@ -27,29 +27,30 @@ export const getServerSideProps: GetServerSideProps<{
   console.log(`Search Query Received: ${query}`); // Log received query
 
   if (query.trim()) {
-    // Refined GROQ query with parentheses around OR conditions
+    // Alternative GROQ Query using boost()
     const sanityQuery = `
-      *[(
-        _type in ['post', 'teamMember'] && 
-        ( 
-          title match $query + '*' || 
-          name match $query + '*' || 
-          role match $query + '*' || 
-          excerpt match $query + '*' || 
-          pt::text(bio) match $query + '*' || 
-          pt::text(body) match $query + '*' 
+      *[
+        _type in ['post', 'teamMember'] &&
+        // Use boost for weighted keyword matching
+        boost(title match $query, 3) ||
+        boost(name match $query, 3) || // Boost titles/names
+        boost(role match $query, 1) ||
+        boost(excerpt match $query, 2) || // Boost excerpts slightly
+        boost(pt::text(body) match $query, 1) ||
+        boost(pt::text(bio) match $query, 1)
+      ]
+      | score( // Use score primarily for ranking based on boost
+          boost(title match $query, 3),
+          boost(name match $query, 3),
+          boost(role match $query, 1),
+          boost(excerpt match $query, 2),
+          boost(pt::text(body) match $query, 1),
+          boost(pt::text(bio) match $query, 1)
         )
-      )] | score( 
-          title match $query + '*' => 3, // Boost title/name matches
-          name match $query + '*' => 3, 
-          excerpt match $query + '*' => 1.5,
-          pt::text(body) match $query + '*' => 1, 
-          pt::text(bio) match $query + '*' => 1 
-      ) | order(_score desc) {
+      | order(_score desc) {
         _id,
         _type,
-        _score, // Include score for debugging
-        // Projections for different types
+        _score, // Keep score for debugging
         _type == 'post' => {
           title,
           slug,
@@ -59,11 +60,11 @@ export const getServerSideProps: GetServerSideProps<{
           name,
           role
         }
-      }[0...20] // Limit results
+      }[0...20]
     `;
 
     try {
-      console.log('Executing Sanity Query...');
+      console.log('Executing Sanity Query (Boosted)...');
       // @ts-ignore - Keep ignoring for now, focus on functionality
       results = await sanityClient.fetch(sanityQuery, { query });
       console.log('Sanity Query Results:', results); // Log fetched results
