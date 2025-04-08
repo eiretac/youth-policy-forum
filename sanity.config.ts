@@ -22,6 +22,16 @@ export default defineConfig({
       ]
     }
   },
+  auth: {
+    redirectOnSingle: true,
+    mode: 'replace',
+    loginMethod: 'token',
+    providers: [{
+      name: 'sanity',
+      title: 'Sanity.io',
+      url: 'https://api.sanity.io/v1/auth/login'
+    }]
+  },
   plugins: [deskTool(), visionTool()],
   schema: {
     types: schemaTypes,
