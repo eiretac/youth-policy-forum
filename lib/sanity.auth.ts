@@ -1,21 +1,23 @@
-import { createClient } from '@sanity/client';
+import { createClient, type ClientPerspective } from '@sanity/client';
 
-export const client = createClient({
+const config = {
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
   apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION,
   useCdn: false,
-  token: process.env.SANITY_API_TOKEN, // Will be added to .env.local
   withCredentials: true,
-});
+  token: process.env.SANITY_API_TOKEN,
+  perspective: 'published' as ClientPerspective,
+  stega: {
+    enabled: false,
+  },
+};
+
+export const client = createClient(config);
 
 export const previewClient = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION,
-  useCdn: false,
-  token: process.env.SANITY_API_TOKEN,
-  withCredentials: true,
+  ...config,
+  perspective: 'previewDrafts' as ClientPerspective,
 });
 
 export const getClient = (usePreview = false) => (usePreview ? previewClient : client); 

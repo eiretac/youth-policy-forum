@@ -25,7 +25,7 @@ export default defineConfig({
   auth: {
     redirectOnSingle: true,
     mode: 'replace',
-    loginMethod: 'token',
+    loginMethod: 'dual',
     providers: [{
       name: 'sanity',
       title: 'Sanity.io',
