@@ -4,6 +4,7 @@ import { urlFor } from '@/lib/sanity';
 import { Post } from '@/types';
 import Layout from '@/components/Layout';
 import { PortableText } from '@portabletext/react';
+import Image from 'next/image';
 
 interface BlogPostProps {
   post: Post;
@@ -16,11 +17,17 @@ export default function BlogPost({ post }: BlogPostProps) {
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
           <div className="flex items-center mb-8">
-            <img
-              src={urlFor(post.author.image).url()}
-              alt={post.author.name}
-              className="w-12 h-12 rounded-full mr-4"
-            />
+            {post.author.image ? (
+              <img
+                src={urlFor(post.author.image).url()}
+                alt={post.author.name}
+                className="w-12 h-12 rounded-full mr-4"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full mr-4 bg-gray-200 flex items-center justify-center">
+                <span className="text-gray-500 text-xl">{post.author.name.charAt(0)}</span>
+              </div>
+            )}
             <div>
               <p className="font-semibold">{post.author.name}</p>
               <p className="text-gray-600">
@@ -29,11 +36,13 @@ export default function BlogPost({ post }: BlogPostProps) {
             </div>
           </div>
           {post.mainImage && (
-            <img
-              src={urlFor(post.mainImage).url()}
-              alt={post.title}
-              className="w-full h-96 object-cover rounded-lg mb-8"
-            />
+            <div className="relative w-full h-96 mb-8">
+              <img
+                src={urlFor(post.mainImage).url()}
+                alt={post.title}
+                className="w-full h-full object-cover rounded-lg"
+              />
+            </div>
           )}
           <div className="prose max-w-none">
             <PortableText value={post.body} />
