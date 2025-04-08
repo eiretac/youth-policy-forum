@@ -11,7 +11,7 @@ const config = {
   stega: {
     enabled: false,
   },
-  apiHost: 'https://btt6o49p.api.sanity.io',
+  apiHost: 'https://brt6o49p.api.sanity.io',
   requestTagPrefix: 'sanity.studio',
   headers: {
     'Accept': 'application/json',

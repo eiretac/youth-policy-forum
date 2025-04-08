@@ -6,7 +6,7 @@ import { schemaTypes } from './sanity/schemas';
 export default defineConfig({
   name: 'default',
   title: 'Youth Policy Forum CMS',
-  projectId: 'btt6o49p',
+  projectId: 'brt6o49p',
   dataset: 'production',
   basePath: '/admin',
   useCdn: false,
@@ -21,7 +21,7 @@ export default defineConfig({
         'https://youth-policy-forum.vercel.app'
       ]
     },
-    projectId: 'btt6o49p',
+    projectId: 'brt6o49p',
     dataset: 'production',
     apiVersion: '2021-06-07',
     useCdn: false,
