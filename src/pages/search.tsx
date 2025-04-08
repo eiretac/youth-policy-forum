@@ -24,29 +24,31 @@ export const getServerSideProps: GetServerSideProps<{
   const queryParam = context.query.q;
   const query = typeof queryParam === 'string' ? queryParam : '';
   let results: SearchResult[] = [];
+  console.log(`Search Query Received: ${query}`); // Log received query
 
   if (query.trim()) {
-    // GROQ query to search across multiple types and fields
-    // Adjust types and fields based on your schemas
+    // Refined GROQ query with parentheses around OR conditions
     const sanityQuery = `
-      *[
+      *[(
         _type in ['post', 'teamMember'] && 
         ( 
           title match $query + '*' || 
-          (name match $query + '*') || 
-          (role match $query + '*') || 
-          (excerpt match $query + '*') || 
-          (pt::text(bio) match $query + '*') || 
-          (pt::text(body) match $query + '*') 
-        ) | score( 
-          title match $query + '*', 
-          name match $query + '*', 
-          excerpt match $query + '*',
-          pt::text(body) match $query + '*', 
-          pt::text(bio) match $query + '*' 
-        ) | order(_score desc) {
+          name match $query + '*' || 
+          role match $query + '*' || 
+          excerpt match $query + '*' || 
+          pt::text(bio) match $query + '*' || 
+          pt::text(body) match $query + '*' 
+        )
+      )] | score( 
+          title match $query + '*' => 3, // Boost title/name matches
+          name match $query + '*' => 3, 
+          excerpt match $query + '*' => 1.5,
+          pt::text(body) match $query + '*' => 1, 
+          pt::text(bio) match $query + '*' => 1 
+      ) | order(_score desc) {
         _id,
         _type,
+        _score, // Include score for debugging
         // Projections for different types
         _type == 'post' => {
           title,
@@ -56,18 +58,18 @@ export const getServerSideProps: GetServerSideProps<{
         _type == 'teamMember' => {
           name,
           role
-          // Don't need slug for team page usually
         }
-        // Add projections for other searchable types
       }[0...20] // Limit results
     `;
 
     try {
-      // @ts-ignore - Temporarily ignore type error to commit base structure
+      console.log('Executing Sanity Query...');
+      // @ts-ignore - Keep ignoring for now, focus on functionality
       results = await sanityClient.fetch(sanityQuery, { query });
+      console.log('Sanity Query Results:', results); // Log fetched results
     } catch (error) {
       console.error('Sanity search fetch error:', error);
-      // Handle error appropriately, maybe return an error prop
+      results = []; // Ensure results is empty on error
     }
   }
 
@@ -134,7 +136,7 @@ const SearchPage = ({ query, results }: InferGetServerSidePropsType<typeof getSe
                 placeholder="Search the site..."
                 value={currentQuery}
                 onChange={(e) => setCurrentQuery(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent text-lg"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent text-lg text-gray-900"
               />
               <button
                 type="submit"
