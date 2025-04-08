@@ -64,7 +64,18 @@ export default function InsightPost({ post }: BlogPostProps) {
 
         {/* Content Section */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="prose prose-lg max-w-none prose-headings:text-primary prose-p:text-gray-900 prose-strong:text-gray-900">
+          <div className="prose prose-lg max-w-none 
+            prose-headings:text-primary 
+            prose-p:text-black 
+            prose-strong:text-black 
+            prose-ul:text-black 
+            prose-ol:text-black 
+            prose-li:text-black 
+            prose-blockquote:text-black
+            prose-a:text-primary
+            prose-code:text-black
+            prose-pre:text-black
+            prose-em:text-black">
             <PortableText value={post.body} />
           </div>
 
