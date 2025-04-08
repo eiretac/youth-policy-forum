@@ -1,7 +1,7 @@
 import { defineConfig } from 'sanity';
 import { deskTool } from 'sanity/desk';
 import { visionTool } from '@sanity/vision';
-import { schemaTypes } from '../sanity/schemas';
+import { schemaTypes } from './schemas';
 
 // Get environment variables with fallbacks
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || process.env.SANITY_PROJECT_ID || 'brt6o49p';
