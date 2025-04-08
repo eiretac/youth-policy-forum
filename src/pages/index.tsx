@@ -2,13 +2,14 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import Layout from '../components/Layout';
 import Link from 'next/link';
+import NewsletterSignup from '@/components/NewsletterSignup';
 
 const Home: NextPage = () => {
   return (
     <Layout>
       <Head>
-        <title>Youth Policy Forum - Shaping the Future Through Policy</title>
-        <meta name="description" content="Join the Youth Policy Forum to shape policy and create positive change in society." />
+        <title>Youth Policy Forum - Shaping the Future</title>
+        <meta name="description" content="Join the conversation on youth policy. Explore insights, connect with experts, and get involved." />
       </Head>
 
       {/* Hero Section */}
@@ -86,6 +87,9 @@ const Home: NextPage = () => {
           </Link>
         </div>
       </section>
+
+      {/* Newsletter Signup Section */}
+      <NewsletterSignup />
     </Layout>
   );
 };
