@@ -1,10 +1,10 @@
 import { defineConfig } from 'sanity';
 import { deskTool } from 'sanity/desk';
 import { visionTool } from '@sanity/vision';
-import { schemaTypes } from './schemas';
+import { schemaTypes } from '../sanity/schemas';
 
 // Get environment variables with fallbacks
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || process.env.SANITY_PROJECT_ID || 'btt6o49p';
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || process.env.SANITY_PROJECT_ID || 'brt6o49p';
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || process.env.SANITY_DATASET || 'production';
 const apiToken = process.env.SANITY_API_TOKEN;
 
@@ -23,11 +23,13 @@ if (!projectId) {
 }
 
 const config = defineConfig({
-  name: 'youth-policy-forum',
-  title: 'Youth Policy Forum',
+  name: 'default',
+  title: 'Youth Policy Forum CMS',
   projectId,
   dataset,
   basePath: '/studio',
+  useCdn: false,
+  apiVersion: '2021-06-07',
   plugins: [deskTool(), visionTool()],
   schema: {
     types: schemaTypes,

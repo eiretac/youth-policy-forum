@@ -3,34 +3,34 @@
  */
 import { createClient } from '@sanity/client';
 
-// Initialize with default values
-let clientConfig: any = {
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'btt6o49p',
+const defaultConfig = {
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'brt6o49p',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2021-06-07',
   useCdn: false,
+  withCredentials: true,
+  token: process.env.SANITY_API_TOKEN,
 };
 
-// Function to initialize Sanity client
-export const initSanityClient = async () => {
+let client = createClient(defaultConfig);
+
+export const getClient = async () => {
   try {
-    // Fetch auth info from our API
     const response = await fetch('/api/auth');
     const data = await response.json();
-    
-    // Update with fresh data from API
-    clientConfig = {
-      ...clientConfig,
-      projectId: data.projectId,
-      dataset: data.dataset,
-      token: data.apiToken,
-    };
-    
-    // Log authentication status
-    console.log('Sanity authentication status:', data.authenticated ? 'Authenticated' : 'Not authenticated');
-    
-    return createClient(clientConfig);
+
+    if (data.authenticated) {
+      client = createClient({
+        ...defaultConfig,
+        projectId: data.projectId,
+        dataset: data.dataset,
+        token: data.apiToken,
+      });
+    }
+
+    return client;
   } catch (error) {
     console.error('Failed to initialize Sanity client:', error);
-    return createClient(clientConfig);
+    return client;
   }
 }; 
