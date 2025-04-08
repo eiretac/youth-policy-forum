@@ -20,7 +20,13 @@ export default defineConfig({
         'https://ypf-studio.vercel.app',
         'https://youth-policy-forum.vercel.app'
       ]
-    }
+    },
+    projectId: 'btt6o49p',
+    dataset: 'production',
+    apiVersion: '2021-06-07',
+    useCdn: false,
+    withCredentials: true,
+    token: process.env.SANITY_API_TOKEN,
   },
   auth: {
     redirectOnSingle: true,
