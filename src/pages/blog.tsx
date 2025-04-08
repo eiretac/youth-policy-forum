@@ -1,8 +1,7 @@
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
 import { useState } from 'react';
-import { sanityClient } from '@/lib/sanity';
-import { urlFor } from '@/lib/sanity';
+import { sanityClient, urlFor } from '@/sanity/client';
 import { Post, Category } from '@/types';
 import Layout from '@/components/Layout';
 
