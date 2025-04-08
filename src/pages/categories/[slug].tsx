@@ -46,16 +46,22 @@ export default function CategoryPage({ posts, category }: CategoryPageProps) {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const query = `*[_type == "category"] {
+  const query = `*[_type == "category" && defined(slug.current)] {
     slug {
       current
     }
   }`;
 
   const categories = await sanityClient.fetch(query);
-  const paths = categories.map((category: { slug: { current: string } }) => ({
-    params: { slug: category.slug.current },
-  }));
+  
+  // Filter out any categories that might still lack a slug or have a null slug
+  const paths = categories
+    .filter((category: { slug?: { current?: string } } | null) => 
+      category && category.slug && category.slug.current
+    )
+    .map((category: { slug: { current: string } }) => ({
+      params: { slug: category.slug.current },
+    }));
 
   return {
     paths,
