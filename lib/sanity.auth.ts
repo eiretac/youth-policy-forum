@@ -1,4 +1,4 @@
-import { createClient, type ClientPerspective } from '@sanity/client';
+import { createClient } from '@sanity/client';
 
 const config = {
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
@@ -7,23 +7,13 @@ const config = {
   useCdn: false,
   withCredentials: true,
   token: process.env.SANITY_API_TOKEN,
-  perspective: 'published' as ClientPerspective,
-  stega: {
-    enabled: false,
-  },
-  apiHost: 'https://brt6o49p.api.sanity.io',
-  requestTagPrefix: 'sanity.studio',
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  },
 };
 
 export const client = createClient(config);
 
 export const previewClient = createClient({
   ...config,
-  perspective: 'previewDrafts' as ClientPerspective,
+  perspective: 'previewDrafts',
 });
 
 export const getClient = (usePreview = false) => (usePreview ? previewClient : client); 

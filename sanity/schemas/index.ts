@@ -10,7 +10,6 @@ export const schemaTypes = [
         name: 'title',
         title: 'Title',
         type: 'string',
-        validation: (Rule) => Rule.required(),
       }),
       defineField({
         name: 'slug',
@@ -20,7 +19,6 @@ export const schemaTypes = [
           source: 'title',
           maxLength: 96,
         },
-        validation: (Rule) => Rule.required(),
       }),
       defineField({
         name: 'author',
@@ -142,7 +140,10 @@ export const schemaTypes = [
           { title: 'H4', value: 'h4' },
           { title: 'Quote', value: 'blockquote' },
         ],
-        lists: [{ title: 'Bullet', value: 'bullet' }],
+        lists: [
+          { title: 'Bullet', value: 'bullet' },
+          { title: 'Number', value: 'number' },
+        ],
         marks: {
           decorators: [
             { title: 'Strong', value: 'strong' },
@@ -150,14 +151,14 @@ export const schemaTypes = [
           ],
           annotations: [
             {
+              title: 'URL',
               name: 'link',
               type: 'object',
-              title: 'Link',
               fields: [
                 {
+                  title: 'URL',
                   name: 'href',
                   type: 'url',
-                  title: 'URL',
                 },
               ],
             },
