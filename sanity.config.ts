@@ -9,6 +9,12 @@ export default defineConfig({
   projectId: 'your-project-id',
   dataset: 'production',
   basePath: '/admin',
+  api: {
+    cors: {
+      credentials: true,
+      origin: ['https://ypf-studio.vercel.app']
+    }
+  },
   plugins: [deskTool(), visionTool()],
   schema: {
     types: schemaTypes,
