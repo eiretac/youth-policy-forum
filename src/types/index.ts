@@ -37,8 +37,8 @@ export interface Author {
 export interface Category {
   _id: string;
   title: string;
-  description?: string;
   slug: {
     current: string;
   };
+  description?: string;
 } 
