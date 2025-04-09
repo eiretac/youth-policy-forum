@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
 import { useSession, signOut } from 'next-auth/react';
 import DarkModeToggle from './DarkModeToggle';
+import { useTheme } from '../context/ThemeContext';
 
 const Navbar = () => {
   const router = useRouter();
@@ -14,6 +15,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const { isDarkMode } = useTheme();
 
   const dropdownItems = {
     'About': [
