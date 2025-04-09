@@ -142,12 +142,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-gray-100">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 dark:text-white transition-colors duration-300">
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         className={`fixed w-full z-50 transition-all duration-300 ${
-          isScrolled ? 'bg-white/90 backdrop-blur-md shadow-lg' : 'bg-transparent'
+          isScrolled ? 'bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-lg' : 'bg-transparent'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -171,7 +171,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <motion.footer
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-primary text-white"
+        className="bg-primary dark:bg-gray-900 text-white"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Footer />
@@ -180,7 +180,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Loading State */}
       <div 
-        className="fixed inset-0 bg-primary-800 flex items-center justify-center z-50 transition-opacity duration-300 opacity-0 pointer-events-none"
+        className="fixed inset-0 bg-primary-800 dark:bg-gray-900 flex items-center justify-center z-50 transition-opacity duration-300 opacity-0 pointer-events-none"
         role="alert"
         aria-live="polite"
         aria-busy="true"

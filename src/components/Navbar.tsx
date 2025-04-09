@@ -63,7 +63,7 @@ const Navbar = () => {
         <button
           onClick={() => toggleDropdown(name + mobileSuffix)}
           className={`nav-link flex items-center ${isMobile ? 'w-full text-left px-3 py-2 justify-between' : ''} ${
-            activeDropdown === (name + mobileSuffix) ? 'text-secondary' : 'text-gray-700 hover:text-secondary'
+            activeDropdown === (name + mobileSuffix) ? 'text-secondary' : 'text-gray-700 dark:text-gray-300 hover:text-secondary'
           }`}
           aria-expanded={activeDropdown === (name + mobileSuffix)}
           aria-haspopup="true"
@@ -86,14 +86,14 @@ const Navbar = () => {
               initial={isMobile ? { height: 0, opacity: 0 } : { opacity: 0, y: -10 }}
               animate={isMobile ? { height: 'auto', opacity: 1 } : { opacity: 1, y: 0 }}
               exit={isMobile ? { height: 0, opacity: 0 } : { opacity: 0, y: -10 }}
-              className={isMobile ? "overflow-hidden pl-3" : "absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50"}
+              className={isMobile ? "overflow-hidden pl-3" : "absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-2 z-50"}
               id={isMobile ? dropdownId : undefined}
             >
               {dropdownItems[name].map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`block ${isMobile ? 'px-3' : 'px-4'} py-2 text-gray-700 hover:bg-gray-50 hover:text-secondary transition-colors ${isMobile ? 'text-base' : 'text-sm'}`}
+                  className={`block ${isMobile ? 'px-3' : 'px-4'} py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-secondary transition-colors ${isMobile ? 'text-base' : 'text-sm'}`}
                   onClick={() => {
                     setActiveDropdown(null);
                     if (isMobile) setIsMenuOpen(false);
@@ -111,7 +111,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className={`sticky top-0 z-50 transition-shadow duration-300 ${isScrolled ? 'shadow-md bg-white' : 'bg-white'}`}>
+    <nav className={`sticky top-0 z-50 transition-shadow duration-300 ${isScrolled ? 'shadow-md bg-white dark:bg-gray-800' : 'bg-white dark:bg-gray-800'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -123,7 +123,7 @@ const Navbar = () => {
 
             <Link
               href="/arcade"
-              className={`nav-link ${router.pathname === '/arcade' ? 'text-secondary' : 'text-gray-700 hover:text-secondary'}`}
+              className={`nav-link ${router.pathname === '/arcade' ? 'text-secondary' : 'text-gray-700 dark:text-gray-300 hover:text-secondary'}`}
               aria-current={router.pathname === '/arcade' ? 'page' : undefined}
             >
               Arcade
@@ -135,7 +135,7 @@ const Navbar = () => {
               <div className="flex items-center space-x-4">
                 <Link
                   href="/member-area"
-                  className="nav-link text-gray-700 hover:text-secondary"
+                  className="nav-link text-gray-700 dark:text-gray-300 hover:text-secondary"
                   aria-current={router.pathname === '/member-area' ? 'page' : undefined}
                 >
                   Member Area
@@ -162,11 +162,11 @@ const Navbar = () => {
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-32 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary focus:w-48 transition-all text-sm"
+                className="w-32 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary focus:w-48 transition-all text-sm"
               />
               <button
                 type="submit"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-secondary"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-secondary"
                 aria-label="Search"
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -203,7 +203,7 @@ const Navbar = () => {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 rounded-lg text-gray-700 hover:text-secondary transition-colors"
+              className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:text-secondary transition-colors"
               aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
@@ -229,7 +229,7 @@ const Navbar = () => {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg border-t border-gray-200 z-40"
+            className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-gray-800 shadow-lg border-t border-gray-200 dark:border-gray-700 z-40"
             id="mobile-menu"
           >
             <div className="px-4 pt-5 pb-6 space-y-1">
@@ -237,19 +237,19 @@ const Navbar = () => {
 
               <Link
                 href="/arcade"
-                className="block px-3 py-2 text-base text-gray-700 hover:text-secondary transition-colors"
+                className="block px-3 py-2 text-base text-gray-700 dark:text-gray-300 hover:text-secondary transition-colors"
                 onClick={() => setIsMenuOpen(false)}
                 aria-current={router.pathname === '/arcade' ? 'page' : undefined}
               >
                 Arcade
               </Link>
 
-              <div className="border-t border-gray-200 pt-4 mt-4 space-y-1">
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4 space-y-1">
                 {session ? (
                   <>
                     <Link
                       href="/member-area"
-                      className="block px-3 py-2 text-base text-gray-700 hover:text-secondary transition-colors"
+                      className="block px-3 py-2 text-base text-gray-700 dark:text-gray-300 hover:text-secondary transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                       aria-current={router.pathname === '/member-area' ? 'page' : undefined}
                     >
@@ -260,7 +260,7 @@ const Navbar = () => {
                         signOut();
                         setIsMenuOpen(false);
                       }}
-                      className="block w-full text-left px-3 py-2 text-base text-gray-700 hover:text-secondary transition-colors"
+                      className="block w-full text-left px-3 py-2 text-base text-gray-700 dark:text-gray-300 hover:text-secondary transition-colors"
                     >
                       Sign Out
                     </button>
@@ -268,7 +268,7 @@ const Navbar = () => {
                 ) : (
                   <Link
                     href="/auth/signin"
-                    className="block px-3 py-2 text-base text-gray-700 hover:text-secondary transition-colors"
+                    className="block px-3 py-2 text-base text-gray-700 dark:text-gray-300 hover:text-secondary transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Sign In
