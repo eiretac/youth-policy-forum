@@ -12,7 +12,8 @@ export function middleware(request: NextRequest) {
   const isNextAuthApiRoute = path.startsWith('/api/auth');
   const isDiagnosticRoute = path === '/api/db-test' || 
                            path === '/api/db-test-direct' || 
-                           path === '/api/env-check';
+                           path === '/api/env-check' ||
+                           path === '/api/db-cred-test';
   
   if (isNextAuthApiRoute || isDiagnosticRoute) {
     const response = NextResponse.next();
@@ -57,6 +58,7 @@ export const config = {
     '/api/db-test',
     '/api/db-test-direct',
     '/api/env-check',
+    '/api/db-cred-test',
     '/api/:path*',
   ],
 }; 
