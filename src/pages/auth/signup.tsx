@@ -95,7 +95,13 @@ export default function SignUp() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15-second timeout
       
-      const res = await fetch('/api/auth/signup', {
+      // Get the base URL for API requests
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
+      const apiUrl = `${baseUrl}/api/auth/signup`;
+      
+      console.log('Sending request to:', apiUrl);
+      
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -156,7 +162,7 @@ export default function SignUp() {
       }
 
       console.log('Signup successful, redirecting...');
-      // Redirect to sign in page on success
+      // Redirect to sign in page on success with a success message
       router.push('/auth/signin?message=Account created successfully. Please sign in.');
     } catch (err: any) {
       console.error('Signup error:', err);

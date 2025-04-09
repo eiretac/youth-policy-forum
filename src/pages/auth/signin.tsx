@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import Layout from '@/components/Layout';
+import Layout from '../../components/Layout';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 

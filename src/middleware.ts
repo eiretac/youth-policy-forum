@@ -7,6 +7,18 @@ export function middleware(request: NextRequest) {
 
   // Define public paths that don't require authentication
   const isPublicPath = path === '/auth/signin' || path === '/auth/signup';
+  
+  // Skip auth check for NextAuth API routes
+  const isNextAuthApiRoute = path.startsWith('/api/auth');
+  
+  if (isNextAuthApiRoute) {
+    const response = NextResponse.next();
+    // Ensure proper CORS headers for auth API routes
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    return response;
+  }
 
   // Get the token from the cookies
   const token = request.cookies.get('next-auth.session-token')?.value;
@@ -32,12 +44,13 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// See "Matching Paths" below to learn more
+// Update the matcher to include NextAuth API routes specifically
 export const config = {
   matcher: [
     '/member-area/:path*',
     '/auth/signin',
     '/auth/signup',
+    '/api/auth/:path*',
     '/api/:path*',
   ],
 }; 
