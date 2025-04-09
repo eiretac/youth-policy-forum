@@ -8,12 +8,13 @@ export function middleware(request: NextRequest) {
   // Define public paths that don't require authentication
   const isPublicPath = path === '/auth/signin' || path === '/auth/signup';
   
-  // Skip auth check for NextAuth API routes
+  // Skip auth check for NextAuth API routes and diagnostic routes
   const isNextAuthApiRoute = path.startsWith('/api/auth');
+  const isDiagnosticRoute = path === '/api/db-test' || path === '/api/db-test-direct';
   
-  if (isNextAuthApiRoute) {
+  if (isNextAuthApiRoute || isDiagnosticRoute) {
     const response = NextResponse.next();
-    // Ensure proper CORS headers for auth API routes
+    // Ensure proper CORS headers for API routes
     response.headers.set('Access-Control-Allow-Origin', '*');
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -44,13 +45,15 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Update the matcher to include NextAuth API routes specifically
+// Update the matcher to include diagnostic routes
 export const config = {
   matcher: [
     '/member-area/:path*',
     '/auth/signin',
     '/auth/signup',
     '/api/auth/:path*',
+    '/api/db-test',
+    '/api/db-test-direct',
     '/api/:path*',
   ],
 }; 
