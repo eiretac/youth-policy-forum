@@ -1,7 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
+
+// Password strength checker
+const checkPasswordStrength = (password: string) => {
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumbers = /\d/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  const isLongEnough = password.length >= 8;
+
+  const strength = [
+    hasUpperCase,
+    hasLowerCase,
+    hasNumbers,
+    hasSpecialChar,
+    isLongEnough,
+  ].filter(Boolean).length;
+
+  return {
+    strength,
+    hasUpperCase,
+    hasLowerCase,
+    hasNumbers,
+    hasSpecialChar,
+    isLongEnough,
+  };
+};
 
 export default function SignUp() {
   const router = useRouter();
@@ -10,16 +37,29 @@ export default function SignUp() {
     email: '',
     password: '',
     confirmPassword: '',
+    acceptTerms: false,
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState({
+    strength: 0,
+    hasUpperCase: false,
+    hasLowerCase: false,
+    hasNumbers: false,
+    hasSpecialChar: false,
+    isLongEnough: false,
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
+
+    if (name === 'password') {
+      setPasswordStrength(checkPasswordStrength(value));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,6 +70,20 @@ export default function SignUp() {
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate password strength
+    if (passwordStrength.strength < 3) {
+      setError('Password is too weak. Please use a stronger password.');
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate terms acceptance
+    if (!formData.acceptTerms) {
+      setError('Please accept the terms and conditions');
       setIsLoading(false);
       return;
     }
@@ -47,27 +101,18 @@ export default function SignUp() {
         }),
       });
 
-      let data;
-      try {
-        data = await res.json();
-      } catch (e) {
-        console.error('Failed to parse response:', e);
-        throw new Error('Server response was invalid');
-      }
+      const data = await res.json();
 
       if (!res.ok) {
-        // Handle specific error cases
-        if (res.status === 504) {
-          throw new Error('Request timed out. Please try again.');
-        }
-        if (res.status === 503) {
-          throw new Error('Database service unavailable. Please try again later.');
-        }
-        throw new Error(data.message || 'Something went wrong');
+        throw new Error(data.error || 'Something went wrong');
+      }
+
+      if (!data.success) {
+        throw new Error(data.error || 'Signup failed');
       }
 
       // Redirect to sign in page on success
-      router.push('/auth/signin');
+      router.push('/auth/signin?message=Account created successfully. Please sign in.');
     } catch (err: any) {
       console.error('Signup error:', err);
       setError(err.message || 'An unexpected error occurred');
@@ -150,6 +195,39 @@ export default function SignUp() {
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-secondary focus:border-secondary"
                   />
                 </div>
+                {formData.password && (
+                  <div className="mt-2">
+                    <div className="grid grid-cols-5 gap-2">
+                      {[...Array(5)].map((_, i) => (
+                        <div
+                          key={i}
+                          className={`h-1 rounded ${
+                            i < passwordStrength.strength
+                              ? 'bg-green-500'
+                              : 'bg-gray-200'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <ul className="mt-2 text-xs text-gray-500">
+                      <li className={passwordStrength.hasUpperCase ? 'text-green-500' : ''}>
+                        • At least one uppercase letter
+                      </li>
+                      <li className={passwordStrength.hasLowerCase ? 'text-green-500' : ''}>
+                        • At least one lowercase letter
+                      </li>
+                      <li className={passwordStrength.hasNumbers ? 'text-green-500' : ''}>
+                        • At least one number
+                      </li>
+                      <li className={passwordStrength.hasSpecialChar ? 'text-green-500' : ''}>
+                        • At least one special character
+                      </li>
+                      <li className={passwordStrength.isLongEnough ? 'text-green-500' : ''}>
+                        • At least 8 characters long
+                      </li>
+                    </ul>
+                  </div>
+                )}
               </div>
 
               <div>
@@ -169,6 +247,28 @@ export default function SignUp() {
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-secondary focus:border-secondary"
                   />
                 </div>
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  id="acceptTerms"
+                  name="acceptTerms"
+                  type="checkbox"
+                  required
+                  checked={formData.acceptTerms}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded"
+                />
+                <label htmlFor="acceptTerms" className="ml-2 block text-sm text-gray-700">
+                  I agree to the{' '}
+                  <Link href="/terms" className="text-secondary hover:text-secondary-600">
+                    Terms of Service
+                  </Link>{' '}
+                  and{' '}
+                  <Link href="/privacy" className="text-secondary hover:text-secondary-600">
+                    Privacy Policy
+                  </Link>
+                </label>
               </div>
 
               {error && (

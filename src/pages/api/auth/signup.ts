@@ -72,6 +72,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       name,
       email,
       password: hashedPassword,
+      role: 'user', // Set default role
     });
     console.log('User created successfully');
 
@@ -83,20 +84,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       role: user.role,
     };
 
-    return res.status(201).json(userResponse);
+    // Return success response
+    return res.status(201).json({
+      success: true,
+      user: userResponse,
+      message: 'Account created successfully',
+    });
   } catch (error: any) {
     console.error('Signup error:', error);
     
     // Handle specific error cases
     if (error.message.includes('timeout')) {
-      return res.status(504).json({ error: 'Request timed out. Please try again.' });
+      return res.status(504).json({ 
+        success: false,
+        error: 'Request timed out. Please try again.' 
+      });
     }
 
     if (error.message.includes('database')) {
-      return res.status(503).json({ error: 'Database service unavailable. Please try again later.' });
+      return res.status(503).json({ 
+        success: false,
+        error: 'Database service unavailable. Please try again later.' 
+      });
     }
 
     // Generic error response
-    return res.status(500).json({ error: 'An error occurred while creating your account. Please try again.' });
+    return res.status(500).json({ 
+      success: false,
+      error: 'An error occurred while creating your account. Please try again.' 
+    });
   }
 } 
