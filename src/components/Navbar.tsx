@@ -12,6 +12,7 @@ const Navbar = () => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
 
   const dropdownItems = {
     'About': [
@@ -174,8 +175,19 @@ const Navbar = () => {
 
           <div className="md:hidden flex items-center">
             <form onSubmit={handleSearch} className="relative mr-2">
+              {showMobileSearch && (
+                <input
+                  type="search"
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-32 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary focus:w-48 transition-all text-sm"
+                  autoFocus
+                />
+              )}
               <button
-                type="submit"
+                type="button"
+                onClick={() => setShowMobileSearch(!showMobileSearch)}
                 className="p-2 rounded-lg text-gray-700 hover:text-secondary transition-colors"
                 aria-label="Search"
               >
