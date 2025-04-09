@@ -89,16 +89,41 @@ export default function SignUp() {
     }
 
     try {
+      console.log('Sending signup request...');
+      
+      // Use fetch with timeout to avoid hanging requests
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15-second timeout
+      
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
           password: formData.password,
         }),
+        signal: controller.signal
+      }).catch(err => {
+        console.error('Fetch error:', err);
+        if (err.name === 'AbortError') {
+          throw new Error('Request timed out. Please try again.');
+        }
+        throw new Error(`Network error: ${err.message}`);
+      });
+      
+      clearTimeout(timeoutId);
+      
+      console.log('Response received:', {
+        status: res.status,
+        statusText: res.statusText,
+        headers: {
+          contentType: res.headers.get('content-type'),
+          contentLength: res.headers.get('content-length')
+        }
       });
 
       // Handle empty responses
@@ -108,23 +133,29 @@ export default function SignUp() {
       if (contentType && contentType.includes('application/json')) {
         try {
           data = await res.json();
+          console.log('Response data:', { 
+            success: data.success, 
+            error: data.error,
+            message: data.message 
+          });
         } catch (err) {
           console.error('Failed to parse JSON response:', err);
-          throw new Error('Invalid response from server');
+          throw new Error('Invalid response from server. Please try again.');
         }
       } else {
-        console.warn('Response is not JSON format');
-        data = { success: false, error: 'Unexpected response format' };
+        console.warn('Response is not JSON format. Content-Type:', contentType);
+        throw new Error('Server returned an invalid response format. Please contact support.');
       }
 
       if (!res.ok) {
-        throw new Error(data?.error || `Server error: ${res.status}`);
+        throw new Error(data?.error || `Server error: ${res.status} ${res.statusText}`);
       }
 
       if (!data?.success) {
-        throw new Error(data?.error || 'Signup failed');
+        throw new Error(data?.error || 'Signup failed for an unknown reason. Please try again.');
       }
 
+      console.log('Signup successful, redirecting...');
       // Redirect to sign in page on success
       router.push('/auth/signin?message=Account created successfully. Please sign in.');
     } catch (err: any) {
