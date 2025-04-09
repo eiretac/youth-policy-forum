@@ -9,16 +9,11 @@
 
 import { NextStudio } from 'next-sanity/studio'
 import config from '../../../../sanity.config'
-import { StudioProvider } from 'sanity'
 
 export const dynamic = 'force-static'
 
 export { metadata, viewport } from 'next-sanity/studio'
 
 export default function StudioPage() {
-  return (
-    <StudioProvider config={config}>
-      <NextStudio config={config} />
-    </StudioProvider>
-  )
+  return <NextStudio config={config} />
 }

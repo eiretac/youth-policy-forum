@@ -3,7 +3,7 @@ import { deskTool } from 'sanity/desk';
 import { visionTool } from '@sanity/vision';
 import { schemaTypes } from './sanity/schemas';
 
-export default defineConfig({
+const config = defineConfig({
   name: 'default',
   title: 'Youth Policy Forum CMS',
   projectId: 'brt6o49p',
@@ -15,4 +15,6 @@ export default defineConfig({
   schema: {
     types: schemaTypes,
   },
-}); 
+});
+
+export default config; 
