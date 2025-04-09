@@ -81,7 +81,7 @@ export default function Comments({ postId }: CommentsProps) {
             {...register('name', { required: 'Name is required' })}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary focus:ring-secondary"
           />
-          {errors.name && (
+          {errors.name && typeof errors.name.message === 'string' && (
             <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
           )}
         </div>
@@ -102,7 +102,7 @@ export default function Comments({ postId }: CommentsProps) {
             })}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary focus:ring-secondary"
           />
-          {errors.email && (
+          {errors.email && typeof errors.email.message === 'string' && (
             <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
           )}
         </div>
@@ -117,7 +117,7 @@ export default function Comments({ postId }: CommentsProps) {
             {...register('comment', { required: 'Comment is required' })}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary focus:ring-secondary"
           />
-          {errors.comment && (
+          {errors.comment && typeof errors.comment.message === 'string' && (
             <p className="mt-1 text-sm text-red-600">{errors.comment.message}</p>
           )}
         </div>
