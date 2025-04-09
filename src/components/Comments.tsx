@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanityClient } from '@/sanity/lib/client';
 
@@ -18,6 +18,7 @@ export default function Comments({ postId }: CommentsProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   const {
     register,
@@ -25,6 +26,32 @@ export default function Comments({ postId }: CommentsProps) {
     reset,
     formState: { errors },
   } = useForm();
+
+  // Fetch approved comments for this post
+  useEffect(() => {
+    if (!postId) return;
+    
+    const fetchComments = async () => {
+      setIsLoading(true);
+      try {
+        const query = `*[_type == "comment" && post._ref == $postId && approved == true] | order(createdAt desc) {
+          _id,
+          name,
+          comment,
+          createdAt
+        }`;
+        
+        const result = await sanityClient.fetch(query, { postId });
+        setComments(result);
+      } catch (err) {
+        console.error('Error fetching comments:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchComments();
+  }, [postId]);
 
   const onSubmit = async (data: any) => {
     setIsSubmitting(true);
@@ -42,6 +69,7 @@ export default function Comments({ postId }: CommentsProps) {
           _ref: postId,
         },
         approved: false,
+        createdAt: new Date().toISOString(),
       };
 
       await sanityClient.create(comment);
@@ -132,17 +160,23 @@ export default function Comments({ postId }: CommentsProps) {
       </form>
 
       <div className="mt-8 space-y-4">
-        {comments.map((comment) => (
-          <div key={comment._id} className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex items-center justify-between">
-              <h4 className="font-semibold">{comment.name}</h4>
-              <span className="text-sm text-gray-500">
-                {new Date(comment.createdAt).toLocaleDateString()}
-              </span>
+        {isLoading ? (
+          <div className="text-center py-4">Loading comments...</div>
+        ) : comments.length > 0 ? (
+          comments.map((comment) => (
+            <div key={comment._id} className="bg-gray-50 p-4 rounded-lg">
+              <div className="flex items-center justify-between">
+                <h4 className="font-semibold">{comment.name}</h4>
+                <span className="text-sm text-gray-500">
+                  {new Date(comment.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+              <p className="mt-2 text-gray-700">{comment.comment}</p>
             </div>
-            <p className="mt-2 text-gray-700">{comment.comment}</p>
-          </div>
-        ))}
+          ))
+        ) : (
+          <div className="text-center py-4 text-gray-500">No comments yet. Be the first to comment!</div>
+        )}
       </div>
     </div>
   );

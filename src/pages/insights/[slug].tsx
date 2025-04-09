@@ -3,6 +3,7 @@ import { sanityClient } from '@/lib/sanity';
 import { urlFor } from '@/lib/sanity';
 import { Post } from '@/types';
 import Layout from '@/components/Layout';
+import Comments from '@/components/Comments';
 import { PortableText, PortableTextComponents } from '@portabletext/react';
 import Head from 'next/head';
 
@@ -122,6 +123,11 @@ export default function InsightPost({ post }: BlogPostProps) {
               </div>
             </div>
           )}
+          
+          {/* Comments Section */}
+          <div className="mt-12 pt-6 border-t border-gray-200">
+            <Comments postId={post._id} />
+          </div>
         </div>
       </article>
     </Layout>
