@@ -26,6 +26,14 @@ const safeResponse = (res: NextApiResponse, statusCode: number, data: any) => {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log('Signup API called with method:', req.method);
   
+  // Debug environment variables
+  console.log('Environment variables check:', {
+    nodeEnv: process.env.NODE_ENV,
+    hasMongoDB: !!process.env.MONGODB_URI,
+    hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
+    hasNextAuthUrl: !!process.env.NEXTAUTH_URL,
+  });
+  
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -47,9 +55,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    console.log('Connecting to database...');
-    await dbConnect();
-    console.log('Database connected successfully');
+    console.log('Connecting to database with URI:', process.env.MONGODB_URI ? 'URI exists' : 'URI is missing');
+    
+    // Add timing information to diagnose slowness
+    const dbStartTime = Date.now();
+    try {
+      await dbConnect();
+      console.log(`Database connected successfully in ${Date.now() - dbStartTime}ms`);
+    } catch (error: any) {
+      console.error('Database connection failed:', error);
+      console.error('Database error stack:', error.stack);
+      return safeResponse(res, 503, {
+        success: false,
+        error: 'Database service unavailable. Please try again later.',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
 
     // Parse the request body
     let body;
