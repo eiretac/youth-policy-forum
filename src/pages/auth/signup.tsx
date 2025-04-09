@@ -101,14 +101,28 @@ export default function SignUp() {
         }),
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Something went wrong');
+      // Handle empty responses
+      const contentType = res.headers.get('content-type');
+      let data;
+      
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          data = await res.json();
+        } catch (err) {
+          console.error('Failed to parse JSON response:', err);
+          throw new Error('Invalid response from server');
+        }
+      } else {
+        console.warn('Response is not JSON format');
+        data = { success: false, error: 'Unexpected response format' };
       }
 
-      if (!data.success) {
-        throw new Error(data.error || 'Signup failed');
+      if (!res.ok) {
+        throw new Error(data?.error || `Server error: ${res.status}`);
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.error || 'Signup failed');
       }
 
       // Redirect to sign in page on success

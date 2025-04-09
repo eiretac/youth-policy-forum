@@ -3,6 +3,22 @@ import { dbConnect } from '@/lib/db';
 import User from '@/models/User';
 import { hash } from 'bcryptjs';
 
+// Define a function to safely end the response
+const safeResponse = (res: NextApiResponse, statusCode: number, data: any) => {
+  try {
+    return res.status(statusCode).json(data);
+  } catch (error) {
+    console.error('Error sending response:', error);
+    // If we can't send the detailed response, try a minimal one
+    try {
+      return res.status(statusCode).json({ success: false, error: 'Server error' });
+    } catch (e) {
+      // Last resort - end the response without JSON
+      return res.status(500).end();
+    }
+  }
+};
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return safeResponse(res, 405, { success: false, error: 'Method not allowed' });
   }
 
   try {
@@ -31,7 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log('Request body:', { ...body, password: '[REDACTED]' });
     } catch (e) {
       console.error('Failed to parse request body:', e);
-      return res.status(400).json({ error: 'Invalid request body' });
+      return safeResponse(res, 400, { success: false, error: 'Invalid request body' });
     }
 
     const { name, email, password } = body;
@@ -39,20 +55,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Validate input
     if (!name || !email || !password) {
       console.error('Missing required fields:', { name, email, password: password ? '[REDACTED]' : undefined });
-      return res.status(400).json({ error: 'Please provide all required fields' });
+      return safeResponse(res, 400, { success: false, error: 'Please provide all required fields' });
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       console.error('Invalid email format:', email);
-      return res.status(400).json({ error: 'Please provide a valid email address' });
+      return safeResponse(res, 400, { success: false, error: 'Please provide a valid email address' });
     }
 
     // Validate password length
     if (password.length < 8) {
       console.error('Password too short');
-      return res.status(400).json({ error: 'Password must be at least 8 characters long' });
+      return safeResponse(res, 400, { success: false, error: 'Password must be at least 8 characters long' });
     }
 
     // Check if user already exists
@@ -60,7 +76,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       console.error('User already exists:', email);
-      return res.status(400).json({ error: 'User with this email already exists' });
+      return safeResponse(res, 400, { success: false, error: 'User with this email already exists' });
     }
 
     // Hash password
@@ -72,7 +88,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       name,
       email,
       password: hashedPassword,
-      role: 'user', // Set default role
+      role: 'member', // Set default role
     });
     console.log('User created successfully');
 
@@ -85,7 +101,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     };
 
     // Return success response
-    return res.status(201).json({
+    return safeResponse(res, 201, {
       success: true,
       user: userResponse,
       message: 'Account created successfully',
@@ -94,22 +110,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.error('Signup error:', error);
     
     // Handle specific error cases
-    if (error.message.includes('timeout')) {
-      return res.status(504).json({ 
+    if (error.message?.includes('timeout')) {
+      return safeResponse(res, 504, { 
         success: false,
         error: 'Request timed out. Please try again.' 
       });
     }
 
-    if (error.message.includes('database')) {
-      return res.status(503).json({ 
+    if (error.message?.includes('database')) {
+      return safeResponse(res, 503, { 
         success: false,
         error: 'Database service unavailable. Please try again later.' 
       });
     }
 
     // Generic error response
-    return res.status(500).json({ 
+    return safeResponse(res, 500, { 
       success: false,
       error: 'An error occurred while creating your account. Please try again.' 
     });
