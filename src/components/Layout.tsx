@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import CookieConsent from './CookieConsent';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -177,6 +178,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Footer />
         </div>
       </motion.footer>
+
+      {/* Cookie Consent Banner */}
+      <CookieConsent />
 
       {/* Loading State */}
       <div 
