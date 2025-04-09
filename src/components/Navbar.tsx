@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
 import { useSession, signOut } from 'next-auth/react';
+import DarkModeToggle from './DarkModeToggle';
 
 const Navbar = () => {
   const router = useRouter();
@@ -128,6 +129,8 @@ const Navbar = () => {
               Arcade
             </Link>
 
+            <DarkModeToggle />
+
             {session ? (
               <div className="flex items-center space-x-4">
                 <Link
@@ -196,6 +199,7 @@ const Navbar = () => {
                 </svg>
               </button>
             </form>
+            <DarkModeToggle />
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
