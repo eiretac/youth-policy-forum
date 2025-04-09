@@ -9,7 +9,7 @@ if (!MONGODB_URI) {
 // Log the connection string (with sensitive info redacted)
 console.log('Attempting to connect to MongoDB with URI:', MONGODB_URI.replace(/\/\/[^@]+@/, '//***:***@'));
 
-interface GlobalWithMongoose extends Global {
+interface GlobalWithMongoose {
   mongoose: {
     conn: typeof mongoose | null;
     promise: Promise<typeof mongoose> | null;

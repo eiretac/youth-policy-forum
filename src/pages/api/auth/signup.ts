@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { dbConnect } from '@/lib/db';
 import User from '@/models/User';
+import { hash } from 'bcryptjs';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Set CORS headers
@@ -61,12 +62,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'User with this email already exists' });
     }
 
+    // Hash password
+    const hashedPassword = await hash(password, 10);
+
     // Create new user
     console.log('Creating new user...');
     const user = await User.create({
       name,
       email,
-      password, // Password will be hashed by the model's pre-save hook
+      password: hashedPassword,
     });
     console.log('User created successfully');
 
