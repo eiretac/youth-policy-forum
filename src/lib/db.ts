@@ -85,8 +85,6 @@ export async function dbConnect() {
       family: 4,                       // Force IPv4
       retryWrites: true,
       retryReads: true,
-      keepAlive: true,
-      keepAliveInitialDelay: 300000,   // 5 minutes
       autoIndex: process.env.NODE_ENV !== 'production', // Don't build indexes in production
     };
 

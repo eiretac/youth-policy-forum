@@ -10,7 +10,9 @@ export function middleware(request: NextRequest) {
   
   // Skip auth check for NextAuth API routes and diagnostic routes
   const isNextAuthApiRoute = path.startsWith('/api/auth');
-  const isDiagnosticRoute = path === '/api/db-test' || path === '/api/db-test-direct';
+  const isDiagnosticRoute = path === '/api/db-test' || 
+                           path === '/api/db-test-direct' || 
+                           path === '/api/env-check';
   
   if (isNextAuthApiRoute || isDiagnosticRoute) {
     const response = NextResponse.next();
@@ -54,6 +56,7 @@ export const config = {
     '/api/auth/:path*',
     '/api/db-test',
     '/api/db-test-direct',
+    '/api/env-check',
     '/api/:path*',
   ],
 }; 
