@@ -91,4 +91,12 @@ export default NextAuth({
   },
   debug: process.env.NODE_ENV === 'development',
   secret: process.env.NEXTAUTH_SECRET,
+  events: {
+    async signIn({ user }) {
+      console.log('User signed in:', user?.email);
+    },
+    async signOut({ token }) {
+      console.log('User signed out:', token?.email);
+    },
+  },
 }); 
