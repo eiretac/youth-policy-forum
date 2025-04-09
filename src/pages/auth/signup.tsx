@@ -97,7 +97,8 @@ export default function SignUp() {
       
       // Get the base URL for API requests
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
-      const apiUrl = `${baseUrl}/api/auth/signup`;
+      // Use the new Atlas API endpoint
+      const apiUrl = `${baseUrl}/api/auth/atlas-signup`;
       
       console.log('Sending request to:', apiUrl);
       
