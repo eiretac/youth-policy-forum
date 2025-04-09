@@ -39,7 +39,7 @@ export default function LikeBookmark({ postId }: LikeBookmarkProps) {
         // Update localStorage
         const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '[]');
         if (isLiked) {
-          localStorage.setItem('likedPosts', JSON.stringify(likedPosts.filter(id => id !== postId)));
+          localStorage.setItem('likedPosts', JSON.stringify(likedPosts.filter((id: string) => id !== postId)));
         } else {
           localStorage.setItem('likedPosts', JSON.stringify([...likedPosts, postId]));
         }
@@ -53,7 +53,7 @@ export default function LikeBookmark({ postId }: LikeBookmarkProps) {
     const bookmarkedPosts = JSON.parse(localStorage.getItem('bookmarkedPosts') || '[]');
     
     if (isBookmarked) {
-      localStorage.setItem('bookmarkedPosts', JSON.stringify(bookmarkedPosts.filter(id => id !== postId)));
+      localStorage.setItem('bookmarkedPosts', JSON.stringify(bookmarkedPosts.filter((id: string) => id !== postId)));
     } else {
       localStorage.setItem('bookmarkedPosts', JSON.stringify([...bookmarkedPosts, postId]));
     }
