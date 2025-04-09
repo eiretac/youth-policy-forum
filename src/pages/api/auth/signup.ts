@@ -141,7 +141,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Check if user already exists
     console.log('Checking for existing user...');
-    const existingUser = await User.findOne({ email });
+    let existingUser = null;
+    try {
+      // Retry up to 3 times with exponential backoff
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          existingUser = await User.findOne({ email });
+          break; // Success, exit loop
+        } catch (err) {
+          console.error(`Attempt ${attempt} failed for User.findOne:`, err);
+          if (attempt === 3) throw err; // Rethrow on final attempt
+          // Exponential backoff
+          const backoff = Math.min(100 * Math.pow(2, attempt), 2000);
+          await new Promise(resolve => setTimeout(resolve, backoff));
+        }
+      }
+    } catch (findError) {
+      console.error('Failed to check for existing user after retries:', findError);
+      return safeResponse(res, 503, { 
+        success: false, 
+        error: 'Database operation failed. Please try again later.' 
+      });
+    }
+    
     if (existingUser) {
       console.error('User already exists:', email);
       return safeResponse(res, 400, { success: false, error: 'User with this email already exists' });
@@ -154,12 +176,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Create new user
     console.log('Creating new user...');
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      role: 'member', // Set default role
-    });
+    let user;
+    try {
+      // Retry up to 3 times with exponential backoff
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          user = await User.create({
+            name,
+            email,
+            password: hashedPassword,
+            role: 'member', // Set default role
+          });
+          break; // Success, exit loop
+        } catch (err) {
+          console.error(`Attempt ${attempt} failed for User.create:`, err);
+          if (attempt === 3) throw err; // Rethrow on final attempt
+          // Exponential backoff
+          const backoff = Math.min(100 * Math.pow(2, attempt), 2000);
+          await new Promise(resolve => setTimeout(resolve, backoff));
+        }
+      }
+    } catch (createError) {
+      console.error('Failed to create user after retries:', createError);
+      return safeResponse(res, 503, { 
+        success: false, 
+        error: 'Failed to create user account. Please try again later.' 
+      });
+    }
+    
     console.log('User created successfully with ID:', user._id);
 
     // Remove password from response
