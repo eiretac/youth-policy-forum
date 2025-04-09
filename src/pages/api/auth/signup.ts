@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { dbConnect } from '@/lib/db';
-import User from '@/models/User';
+import { dbConnect } from '../../../lib/db';
+import User from '../../../models/User';
 import { hash } from 'bcryptjs';
 
 // Define a function to safely end the response
@@ -55,7 +55,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    console.log('Connecting to database with URI:', process.env.MONGODB_URI ? 'URI exists' : 'URI is missing');
+    // Log MongoDB URI if it exists (redacted version)
+    if (process.env.MONGODB_URI) {
+      const redactedUri = process.env.MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@');
+      console.log('Connecting to database with URI:', redactedUri);
+    } else {
+      console.error('MONGODB_URI is missing in environment variables');
+      return safeResponse(res, 500, { 
+        success: false, 
+        error: 'Server configuration error. Please contact support.' 
+      });
+    }
     
     // Add timing information to diagnose slowness
     const dbStartTime = Date.now();
@@ -65,6 +75,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } catch (error: any) {
       console.error('Database connection failed:', error);
       console.error('Database error stack:', error.stack);
+      
+      // Check for specific MongoDB error types
+      const errorMessage = error.message || '';
+      
+      if (errorMessage.includes('failed to connect to server') || 
+          errorMessage.includes('connection timed out')) {
+        return safeResponse(res, 503, {
+          success: false,
+          error: 'Cannot connect to database server. Please try again later.'
+        });
+      }
+      
+      if (errorMessage.includes('Authentication failed') || 
+          errorMessage.includes('not authorized')) {
+        console.error('MongoDB authentication failed - check username/password');
+        return safeResponse(res, 500, {
+          success: false,
+          error: 'Server configuration error. Please contact support.',
+          details: process.env.NODE_ENV === 'development' ? 'Authentication failed' : undefined
+        });
+      }
+      
       return safeResponse(res, 503, {
         success: false,
         error: 'Database service unavailable. Please try again later.',
@@ -157,10 +189,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    if (error.message?.includes('database') || error.name === 'MongoError' || error.name === 'MongooseError') {
+    if (error.name === 'MongooseServerSelectionError' || 
+        error.name === 'MongoServerSelectionError' ||
+        error.message?.includes('connection timed out')) {
+      return safeResponse(res, 503, { 
+        success: false,
+        error: 'Database connection failed. Please try again later.' 
+      });
+    }
+
+    if (error.name === 'MongooseError' || 
+        error.name === 'MongoError' || 
+        error.message?.includes('database')) {
       return safeResponse(res, 503, { 
         success: false,
         error: 'Database service unavailable. Please try again later.' 
+      });
+    }
+
+    // Authentication errors
+    if (error.message?.includes('Authentication failed') || 
+        error.message?.includes('not authorized')) {
+      console.error('Authentication error detected');
+      return safeResponse(res, 500, { 
+        success: false,
+        error: 'Server configuration error. Please contact support.' 
       });
     }
 
