@@ -55,19 +55,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Test MongoDB Atlas connection first
+    // Test MongoDB Atlas connection first with a timeout
     console.log('Testing MongoDB Atlas connection...');
-    const connectionTest = await testConnection();
     
-    if (!connectionTest.success) {
-      console.error('MongoDB Atlas connection test failed:', connectionTest.error);
+    // Create a promise that rejects after a timeout
+    const connectionTestWithTimeout = Promise.race([
+      testConnection(),
+      new Promise<any>((_, reject) => 
+        setTimeout(() => reject(new Error('Connection test timed out after 10 seconds')), 10000)
+      )
+    ]);
+    
+    try {
+      const connectionTest = await connectionTestWithTimeout;
+      if (!connectionTest.success) {
+        console.error('MongoDB Atlas connection test failed:', connectionTest.error);
+        return safeResponse(res, 503, { 
+          success: false, 
+          error: 'Failed to connect to the database. Please try again later.' 
+        });
+      }
+      
+      console.log('MongoDB Atlas connection successful');
+    } catch (timeoutError) {
+      console.error('MongoDB Atlas connection test error:', timeoutError);
       return safeResponse(res, 503, { 
         success: false, 
-        error: 'Failed to connect to the database. Please try again later.' 
+        error: 'Database connection timed out. Please try again later.' 
       });
     }
-    
-    console.log('MongoDB Atlas connection successful');
 
     // Parse the request body
     let body;

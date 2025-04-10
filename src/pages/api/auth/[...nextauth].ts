@@ -1,7 +1,6 @@
 import NextAuth, { DefaultSession } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { dbConnect } from '../../../lib/db';
-import User from '../../../models/User';
+import { findUserByEmail, comparePassword } from '../../../models/AtlasUser';
 import { compare } from 'bcryptjs';
 
 // Define custom types
@@ -37,23 +36,22 @@ export default NextAuth({
         }
 
         try {
-          await dbConnect();
-
-          // Find user and explicitly select password
-          const user = await User.findOne({ email: credentials.email }).select('+password');
+          // Find user using MongoDB Atlas API
+          const user = await findUserByEmail(credentials.email);
 
           if (!user) {
             throw new Error('No user found with this email');
           }
 
-          const isValid = await compare(credentials.password, user.password);
+          // Compare password using bcrypt
+          const isValid = await comparePassword(credentials.password, user.password);
 
           if (!isValid) {
             throw new Error('Invalid password');
           }
 
           return {
-            id: user._id.toString(),
+            id: user._id?.toString() || '',
             email: user.email,
             name: user.name,
             role: user.role,

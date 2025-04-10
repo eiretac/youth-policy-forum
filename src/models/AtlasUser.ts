@@ -36,7 +36,7 @@ export async function findUserByEmail(email: string): Promise<IAtlasUser | null>
     const { findDocuments } = await import('../lib/mongoAtlasApi');
     
     const result = await findDocuments(
-      'users', 
+      'users',  // Collection name - make sure this matches your MongoDB Atlas setup
       { email: email.toLowerCase() }
     );
 
@@ -72,7 +72,7 @@ export async function createUser(userData: CreateUserInput): Promise<IAtlasUser>
       createdAt: new Date()
     };
     
-    const result = await insertDocument('users', newUser);
+    const result = await insertDocument('users', newUser);  // Collection name - make sure this matches your MongoDB Atlas setup
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to create user');

@@ -5,7 +5,17 @@ const DATA_API_APP_ID = process.env.MONGODB_DATA_API_APP_ID || 'mdb_sa_id_67f705
 const DATA_API_API_KEY = process.env.MONGODB_DATA_API_KEY || 'mdb_sa_sk_b8LlIAC2qcdnxO7KUlRyrpLZRLphAm1IfcQ89mIK';
 const DATA_API_BASE_URL = `https://data.mongodb-api.com/app/${DATA_API_APP_ID}/endpoint/data/v1`;
 const CLUSTER_NAME = 'Cluster0';
-const DATABASE_NAME = 'Project0';
+const DATABASE_NAME = 'ypf_database';
+
+// Log the configuration (with sensitive data redacted)
+console.log('MongoDB Atlas Data API Configuration:', {
+  hasAppId: !!DATA_API_APP_ID,
+  hasApiKey: !!DATA_API_API_KEY,
+  appId: DATA_API_APP_ID.substring(0, 5) + '...',
+  baseUrl: DATA_API_BASE_URL.replace(DATA_API_APP_ID, DATA_API_APP_ID.substring(0, 5) + '...'),
+  cluster: CLUSTER_NAME,
+  database: DATABASE_NAME
+});
 
 interface AtlasApiResponse {
   success: boolean;
@@ -23,6 +33,8 @@ export async function findDocuments(
   limit = 100
 ): Promise<AtlasApiResponse> {
   try {
+    console.log(`Finding documents in collection: ${collection} with filter:`, filter);
+    
     const response = await fetch(`${DATA_API_BASE_URL}/action/find`, {
       method: 'POST',
       headers: {
@@ -40,15 +52,22 @@ export async function findDocuments(
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('MongoDB Data API error:', errorData);
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        errorData = { error: `HTTP error ${response.status}: ${response.statusText}` };
+      }
+      console.error(`MongoDB Data API error (${response.status}):`, errorData);
       return {
         success: false,
-        error: errorData.error || `HTTP error ${response.status}`,
+        error: errorData.error || `HTTP error ${response.status}: ${response.statusText}`,
       };
     }
 
     const data = await response.json();
+    console.log(`Found ${data.documents?.length || 0} documents in collection: ${collection}`);
+    
     return {
       success: true,
       data: data.documents,
@@ -70,6 +89,8 @@ export async function insertDocument(
   document: any
 ): Promise<AtlasApiResponse> {
   try {
+    console.log(`Inserting document into collection: ${collection}`);
+    
     const response = await fetch(`${DATA_API_BASE_URL}/action/insertOne`, {
       method: 'POST',
       headers: {
@@ -85,15 +106,22 @@ export async function insertDocument(
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('MongoDB Data API error:', errorData);
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        errorData = { error: `HTTP error ${response.status}: ${response.statusText}` };
+      }
+      console.error(`MongoDB Data API error (${response.status}):`, errorData);
       return {
         success: false,
-        error: errorData.error || `HTTP error ${response.status}`,
+        error: errorData.error || `HTTP error ${response.status}: ${response.statusText}`,
       };
     }
 
     const data = await response.json();
+    console.log(`Document inserted successfully into ${collection} with ID:`, data.insertedId);
+    
     return {
       success: true,
       data: data.insertedId,
@@ -112,6 +140,8 @@ export async function insertDocument(
  */
 export async function testConnection(): Promise<AtlasApiResponse> {
   try {
+    console.log('Testing MongoDB Atlas Data API connection...');
+    
     // Try to ping the system by getting the databases
     const response = await fetch(`${DATA_API_BASE_URL}/action/listDatabases`, {
       method: 'POST',
@@ -125,15 +155,22 @@ export async function testConnection(): Promise<AtlasApiResponse> {
     });
     
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('MongoDB Data API connection test failed:', errorData);
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        errorData = { error: `HTTP error ${response.status}: ${response.statusText}` };
+      }
+      console.error(`MongoDB Atlas Data API connection test failed (${response.status}):`, errorData);
       return {
         success: false,
-        error: errorData.error || `HTTP error ${response.status}`,
+        error: errorData.error || `HTTP error ${response.status}: ${response.statusText}`,
       };
     }
 
     const data = await response.json();
+    console.log('MongoDB Atlas Data API connection successful:', data);
+    
     return {
       success: true,
       data: {
